@@ -115,7 +115,8 @@ class SpotController(Node):
         # print(f"Current Phase: {self.gait_scheduler.current_phase:.3f}\n")
 
     def state_estimation_callback(self):
-        # TODO update user inputs
+
+        # TODO take cmd_vel for desired p_dot
 
         self.robot_state.update(self.last_jointstate_msg, self.last_odometry_msg)
         self.gait_scheduler.update_phase(self.get_clock().now())

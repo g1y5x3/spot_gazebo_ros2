@@ -27,7 +27,8 @@ class GaitScheduler:
         for leg in range(4):
             stance_start = self.phase_offset[self.current_gait][leg]
             self.phase_map[leg] = (self.current_phase - stance_start) % 1.0
-        print(f"phase map {self.phase_map}")
+
+        # print(f"phase map {self.phase_map}")
 
     def get_leg_state(self, leg_idx):
         return "stance" if self.phase_map[leg_idx] < self.duty_factor else "swing"

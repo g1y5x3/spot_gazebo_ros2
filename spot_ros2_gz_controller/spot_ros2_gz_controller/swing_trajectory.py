@@ -17,18 +17,37 @@ class SwingTrajectory():
         self.tau_ff = 0
         self.p_des = np.zeros((4,3))
 
+        self.foot_state_map = {
+            "states": ["stance"] * 4,
+            "trajectories" : [None] * 4,
+            "transition_time": [0.0] * 4,
+            "needs_planning" : [False] * 4
+        }
+
+    def update_foot_states(self, gait_schedule: GaitScheduler):
+        for leg_idx in range(4):
+            current_state = gait_schedule.get_leg_state(leg_idx)
+            previous_state = self.foot_state_map["states"][leg_idx]
+
+            if current_state != previous_state:
+                self.foot_state_map["state"][leg_idx] = current_state
+                self.foot_state_map
+
     def update_swingfoot_trajectory(self, robot_state: RobotState, gait_schedule: GaitScheduler):
         # obtain current foot position and velocity, hip position, and CoM velocity
-        foot_position = robot_state.foot_pos[:,0]
-        foot_velocity = robot_state.foot_vel[:,0]
-        hip_position = robot_state.hip_pos[:,0]
+        foot_pos = robot_state.foot_pos[:,0]
+        foot_vel = robot_state.foot_vel[:,0]
+        hip_pos = robot_state.hip_pos[:,0]
+
         com_vel = robot_state.p_dot
+        # TODO Replace with taking inputs
+        com_des = [1, 0.0, 0.0]
         
         # print(f"foot position {foot_position} {np.size(foot_position)}")
         # print(f"foot velocity {foot_velocity} {np.size(foot_velocity)}")
         # print(f"hip position {hip_position} {np.size(hip_position)}")
         # print(f"com velocity {com_vel} {np.size(com_vel)}")
 
-    def foot_planner(self, t_stance, H_w_base, p, pdot, pdot_d, foot_position):
+    def foot_planner(self, t_stance, H_wb, p, pdot, pdot_d, foot_position):
         pass
 
