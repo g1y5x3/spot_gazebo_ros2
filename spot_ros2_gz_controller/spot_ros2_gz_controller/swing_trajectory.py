@@ -62,7 +62,7 @@ class SwingTrajectory():
         for leg_idx in legs_for_replanning:
             t_stance, t_swing = gait_schedule.t_stance, gait_schedule.t_swing
 
-            # calculate the desired foot position
+            # calculate the desired foot position under the world coordinate frame
             foot_pos_des = self.foot_planner(t_stance, H_wb, com_pos, com_vel, com_des, hip_pos[:,leg_idx])
 
         # print(f"foot position {foot_position} {np.size(foot_position)}")
@@ -70,8 +70,7 @@ class SwingTrajectory():
         # print(f"hip position {hip_position} {np.size(hip_position)}")
         # print(f"com velocity {com_vel} {np.size(com_vel)}")
 
-    def foot_planner(self, t_stance, H_wb, p, pdot, pdot_d, hip_position,):
-        
-        # convert 
+    def foot_planner(self, t_stance, H_wb, p, pdot, pdot_d, hip_position):
+        # convert to world coordinate frame 
         pass
 
