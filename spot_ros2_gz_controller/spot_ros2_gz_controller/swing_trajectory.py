@@ -42,15 +42,19 @@ class SwingTrajectory():
 
     def update_swingfoot_trajectory(self, robot_state: RobotState, gait_schedule: GaitScheduler):
         # obtain current foot position and velocity, hip position, and CoM velocity
+
+        # body coordinate frame
         foot_pos = robot_state.foot_pos
         foot_vel = robot_state.foot_vel
         hip_pos  = robot_state.hip_pos
 
-        H_wb    = robot_state.H_w_base
+        com_des = [1, 0.0, 0.0]
+
+        # world coordinate frame (since they are both obtained from odometry)
         com_pos = robot_state.p
         com_vel = robot_state.p_dot
 
-        com_des = [1, 0.0, 0.0]
+        H_wb    = robot_state.H_w_base
 
         legs_for_replanning = self.update_foot_states(gait_schedule)
 
@@ -59,9 +63,7 @@ class SwingTrajectory():
             t_stance, t_swing = gait_schedule.t_stance, gait_schedule.t_swing
 
             # calculate the desired foot position
-            foot_pos_des = self.foot_planner(t_stance, H_wb, 
-                                             com_pos, com_vel, com_des,
-                                             hip_pos[:,leg_idx])
+            foot_pos_des = self.foot_planner(t_stance, H_wb, com_pos, com_vel, com_des, hip_pos[:,leg_idx])
 
         # print(f"foot position {foot_position} {np.size(foot_position)}")
         # print(f"foot velocity {foot_velocity} {np.size(foot_velocity)}")
@@ -69,5 +71,7 @@ class SwingTrajectory():
         # print(f"com velocity {com_vel} {np.size(com_vel)}")
 
     def foot_planner(self, t_stance, H_wb, p, pdot, pdot_d, hip_position,):
+        
+        # convert 
         pass
 
