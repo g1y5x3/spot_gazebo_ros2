@@ -24,7 +24,6 @@ class SwingTrajectory():
             "states": ["stance"] * 4,
             "trajectories" : [None] * 4,
             "transition_time": [0.0] * 4,
-            "needs_planning" : [False] * 4
         }
 
     def update_foot_states(self, gait_schedule: GaitScheduler):
@@ -38,41 +37,43 @@ class SwingTrajectory():
                 self.foot_state_map["transition_time"][leg_idx] = gait_schedule.current_phase
 
                 if current_state == "swing":
-                    self.foot_state_map["needs_planning"][leg_idx] = True
                     legs_needing_plans.append(leg_idx)
 
         return legs_needing_plans
 
     def update_swingfoot_trajectory(self, robot_state: RobotState, gait_schedule: GaitScheduler):
-        # body coordinate frame
+        # TODO: read com_vel from the control inputs
+        com_vel_des = [1, 0.0, 0.0] # desired CoM velocity in body frame
+
         foot_pos = robot_state.foot_pos # current foot positions in body frame
         foot_vel = robot_state.foot_vel # current foot velocities in body frame
         hip_pos  = robot_state.hip_pos  # current hip positions in body frame
-        com_pos = robot_state.p         # CoM position in world frame
-        com_vel = robot_state.p_dot     # CoM velocity in world frame
-
-        # Desired CoM velocity in body frame
-        com_vel_des = [1, 0.0, 0.0]
+        com_pos_w = robot_state.p         # CoM position in world frame
+        com_vel_w = robot_state.p_dot     # CoM velocity in world frame
 
         H_wb = robot_state.H_w_base # transformation matrix from body to world frame 
         H_bw = robot_state.H_base_w # transformation matrix from world to body frame
 
+        # update current foot positions and velocities
+        self.foot_pos = foot_pos
+        self.foot_vel = foot_vel
+
+        # update foot states and get legs that need replanning
         legs_for_replanning = self.update_foot_states(gait_schedule)
 
-        # plan new foot placement
+        # plan new foot placement for legs that need planning
         for leg_idx in legs_for_replanning:
             print(leg_idx)
             t_stance, t_swing = gait_schedule.t_stance, gait_schedule.t_swing
 
             # calculate the desired foot position in world frame
             foot_pos_w = np.matmul(H_wb, np.append(foot_pos[:,leg_idx], 1))[:3]
-            foot_pos_des_placement = self.foot_planner(t_stance, H_wb, com_pos, com_vel, foot_pos_w, com_vel_des, hip_pos[:,leg_idx])
+            foot_pos_des_placement_w = self.foot_planner(t_stance, H_wb, com_pos_w, com_vel_w, foot_pos_w, com_vel_des, hip_pos[:,leg_idx])
             
             # generate the swing trajectory for this leg
-            self.foot_state_map["trajectories"][leg_idx] = self.generate_swing_trajectory(foot_pos_w, foot_pos_des_placement, t_swing)
+            self.foot_state_map["trajectories"][leg_idx] = self.generate_swing_trajectory(foot_pos_w, foot_pos_des_placement_w, t_swing)
 
         # update the desired foot position and velocity based on current phase and planned trajectory
-        # w.r.t world coordinate frame
         for leg_idx in range(4):
             if self.foot_state_map["states"][leg_idx] == "swing":
                 print(leg_idx)
@@ -83,20 +84,15 @@ class SwingTrajectory():
                     foot_pos_des_swing = swing_traj.value(phase_time).flatten()
                     foot_vel_des_swing = swing_traj.derivative(1).value(phase_time).flatten()
 
-                    # Transformed desired foot position and velocity back to body frame
+                    # transform desired foot position and velocity back to body frame
                     foot_pos_des_b = np.matmul(H_bw, np.append(foot_pos_des_swing, 1))[:3]
                     foot_vel_des_b = np.matmul(H_bw[:3, :3], foot_vel_des_swing)
                     
-                    # Update the desired foot position and velocity
+                    # update the desired foot position and velocity
                     self.foot_pos_des[leg_idx, :] = foot_pos_des_b
                     self.foot_vel_des[leg_idx, :] = foot_vel_des_b
-                    print(foot_pos_des_b)
-                    print(foot_vel_des_b)
-        
-        # print(f"foot position {foot_position} {np.size(foot_position)}")
-        # print(f"foot velocity {foot_velocity} {np.size(foot_velocity)}")
-        # print(f"hip position {hip_position} {np.size(hip_position)}")
-        # print(f"com velocity {com_vel} {np.size(com_vel)}")
+                    print(f"desired foot position {foot_pos_des_b}")
+                    print(f"desired foot velocity {foot_vel_des_b}")
 
     def foot_planner(self, t_stance, H_wb, p_w, pdot_w, foot_w, pdot_d, hip):
         # convert to world coordinate frame
