@@ -4,18 +4,21 @@ from pydrake.trajectories import PiecewisePolynomial
 from .robot_state import RobotState
 from .gait_scheduler import GaitScheduler
 
+
+
 class SwingTrajectory():
     def __init__(self, swing_height = 0.1):
         
         self.swing_height = swing_height
 
-        self.current_positions = np.zeros((4,3))
-        self.target_positions  = np.zeros((4,3))
+        self.foot_pos = np.zeros((4,3))
+        self.foot_vel  = np.zeros((4,3))
+        self.foot_pos_des = np.zeros((4,3))
+        self.foot_vel_des = np.zeros((4,3))
 
         self.K_p = np.zeros((3,3))
         self.K_d = np.zeros((3,3))
         self.tau_ff = 0
-        self.p_des = np.zeros((4,3))
 
         self.foot_state_map = {
             "states": ["stance"] * 4,
@@ -41,35 +44,55 @@ class SwingTrajectory():
         return legs_needing_plans
 
     def update_swingfoot_trajectory(self, robot_state: RobotState, gait_schedule: GaitScheduler):
-        # obtain current foot position and velocity, hip position, and CoM velocity
-
         # body coordinate frame
-        foot_pos = robot_state.foot_pos
-        foot_vel = robot_state.foot_vel
-        hip_pos  = robot_state.hip_pos
+        foot_pos = robot_state.foot_pos # current foot positions in body frame
+        foot_vel = robot_state.foot_vel # current foot velocities in body frame
+        hip_pos  = robot_state.hip_pos  # current hip positions in body frame
+        com_pos = robot_state.p         # CoM position in world frame
+        com_vel = robot_state.p_dot     # CoM velocity in world frame
 
+        # Desired CoM velocity in body frame
         com_vel_des = [1, 0.0, 0.0]
 
-        # world coordinate frame (since they are both obtained from odometry)
-        com_pos = robot_state.p
-        com_vel = robot_state.p_dot
-
-        H_wb    = robot_state.H_w_base
+        H_wb = robot_state.H_w_base # transformation matrix from body to world frame 
+        H_bw = robot_state.H_base_w # transformation matrix from world to body frame
 
         legs_for_replanning = self.update_foot_states(gait_schedule)
 
         # plan new foot placement
         for leg_idx in legs_for_replanning:
             print(leg_idx)
-
             t_stance, t_swing = gait_schedule.t_stance, gait_schedule.t_swing
 
-            # calculate the desired foot position under the world coordinate frame
+            # calculate the desired foot position in world frame
             foot_pos_w = np.matmul(H_wb, np.append(foot_pos[:,leg_idx], 1))[:3]
-            foot_pos_des = self.foot_planner(t_stance, H_wb, com_pos, com_vel, foot_pos_w, com_vel_des, hip_pos[:,leg_idx])
+            foot_pos_des_placement = self.foot_planner(t_stance, H_wb, com_pos, com_vel, foot_pos_w, com_vel_des, hip_pos[:,leg_idx])
             
-            # generate the trajectory
+            # generate the swing trajectory for this leg
+            self.foot_state_map["trajectories"][leg_idx] = self.generate_swing_trajectory(foot_pos_w, foot_pos_des_placement, t_swing)
 
+        # update the desired foot position and velocity based on current phase and planned trajectory
+        # w.r.t world coordinate frame
+        for leg_idx in range(4):
+            if self.foot_state_map["states"][leg_idx] == "swing":
+                print(leg_idx)
+                phase_time = gait_schedule.current_phase - self.foot_state_map["transition_time"][leg_idx]
+                swing_traj = self.foot_state_map["trajectories"][leg_idx]
+                if swing_traj is not None:
+                    # both were based off pydrake PiecewisePolynomial API
+                    foot_pos_des_swing = swing_traj.value(phase_time).flatten()
+                    foot_vel_des_swing = swing_traj.derivative(1).value(phase_time).flatten()
+
+                    # Transformed desired foot position and velocity back to body frame
+                    foot_pos_des_b = np.matmul(H_bw, np.append(foot_pos_des_swing, 1))[:3]
+                    foot_vel_des_b = np.matmul(H_bw[:3, :3], foot_vel_des_swing)
+                    
+                    # Update the desired foot position and velocity
+                    self.foot_pos_des[leg_idx, :] = foot_pos_des_b
+                    self.foot_vel_des[leg_idx, :] = foot_vel_des_b
+                    print(foot_pos_des_b)
+                    print(foot_vel_des_b)
+        
         # print(f"foot position {foot_position} {np.size(foot_position)}")
         # print(f"foot velocity {foot_velocity} {np.size(foot_velocity)}")
         # print(f"hip position {hip_position} {np.size(hip_position)}")
@@ -79,11 +102,11 @@ class SwingTrajectory():
         # convert to world coordinate frame
         # foot_w = np.matmul(H_wb, np.append(foot_position, 1))[:3]
         hip_w = np.matmul(H_wb, np.append(hip, 1))[:3]
-        pdot_d_w = np.matmul(H_wb, np.append(pdot_d, 1))[:3]
+        pdot_d_w = np.matmul(H_wb[:3,:3], pdot_d)
         print(f"pdot_d {pdot_d_w}")
 
         # Raibert heuristic
-        foot_des = hip_w + (t_stance * pdot_d_w) + np.sqrt(p_w[2]/9.81) * (pdot_w - pdot_d_w)
+        foot_des = hip_w + (t_stance*pdot_d_w/2) + np.sqrt(p_w[2]/9.81) * (pdot_w - pdot_d_w)
 
         # TODO estimate ground level
         foot_des[2] = foot_w[2]
@@ -91,7 +114,7 @@ class SwingTrajectory():
         print(f"desired {foot_des}")
         return foot_des
 
-    def generate_swing_trajectory(start_pos, end_pos, t_swing):
+    def generate_swing_trajectory(self, start_pos, end_pos, t_swing):
         t_breakpoints = np.array([[0.],[t_swing/2], [t_swing]])
 
         mid_pos = (start_pos + end_pos) /2
@@ -104,3 +127,5 @@ class SwingTrajectory():
         ))
         vel_breakpoints = np.zeros((3,3))
         swing_traj = PiecewisePolynomial.CubicHermite(t_breakpoints, foot_pos_breakpoints, vel_breakpoints)
+
+        return swing_traj

@@ -8,6 +8,21 @@ from pydrake.multibody.plant import MultibodyPlant
 from pydrake.math import RollPitchYaw, RigidTransform
 from pydrake.common.eigen_geometry import Quaternion
 
+def invert_homogeneous_transform(H):
+    # Extract the rotation matrix and translation vector
+    R = H[:3, :3]  # 3x3 rotation matrix
+    t = H[:3, 3]   # 3x1 translation vector
+
+    # Compute the inverse
+    R_inv = R.T  # Transpose of R is its inverse
+    t_inv = -R_inv @ t  # New translation vector
+
+    # Construct the inverse matrix
+    H_inv = np.eye(4)  # Initialize as identity matrix
+    H_inv[:3, :3] = R_inv
+    H_inv[:3, 3] = t_inv
+
+    return H_inv
 
 class RobotState:
     def __init__(self, model_sdf: str):
@@ -40,6 +55,7 @@ class RobotState:
 
         # transformation between the body frame and world coordinate frame
         self.H_w_base = np.zeros((4,4))
+        self.H_base_w = np.zeros((4,4))
 
         # using drake library for kinematics and dynamics calculation
         # https://github.com/RobotLocomotion/drake
@@ -99,6 +115,7 @@ class RobotState:
 
         # construct a homogeneous transformation matrix from body to world
         self.H_w_base = self.post_to_homogeneous(p, q)
+        self.H_base_w = invert_homogeneous_transform(self.H_w_base)
 
     def quat_to_euler(self, q):
         quat = Quaternion(w=q.w, x=q.x, y=q.y, z=q.z)
