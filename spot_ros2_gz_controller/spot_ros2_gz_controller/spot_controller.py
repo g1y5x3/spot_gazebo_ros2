@@ -12,6 +12,7 @@ from std_srvs.srv import Trigger
 
 from .robot_state import RobotState
 from .gait_scheduler import GaitScheduler
+from .mpc_controller import MPCController
 from .swing_trajectory import SwingTrajectory
 
 class SpotController(Node):
@@ -89,6 +90,7 @@ class SpotController(Node):
         model_sdf = Path(spot_model_description) / 'models' / 'spot' / 'model.sdf'
         self.robot_state = RobotState(str(model_sdf))
         self.gait_scheduler = GaitScheduler(gait_cycle=0.5, start_time=self.get_clock().now())
+        self.mpc_controller = MPCController()
         self.swing_trajectory_generator = SwingTrajectory()
 
         self.create_timer(1/30, self.high_level_control_callback) 
@@ -105,21 +107,18 @@ class SpotController(Node):
         self.last_odometry_msg = msg
 
     def high_level_control_callback(self):
-        horizon_steps = 16
-        # Get current robot state
-        current_robot_state = self.robot_state.get_state_vec()
-
-        current_contact_schedule = self.gait_scheduler.get_contact_schedule(horizon_steps)
-
-
+        # horizon_steps = 16
+        # # Get current robot state
+        # current_robot_state = self.robot_state.get_state_vec()
+        # current_contact_schedule = self.gait_scheduler.get_contact_schedule(horizon_steps)
         # print(f"Current Phase: {self.gait_scheduler.current_phase:.3f}\n")
+        pass
 
     def state_estimation_callback(self):
-
         # TODO take cmd_vel for desired p_dot
-
         self.robot_state.update(self.last_jointstate_msg, self.last_odometry_msg)
         self.gait_scheduler.update_phase(self.get_clock().now())
+        self.mpc_controller.udpate_control(self.robot_state, self.gait_scheduler)
         self.swing_trajectory_generator.update_swingfoot_trajectory(self.robot_state, self.gait_scheduler) 
 
         # R^{T}_{i}

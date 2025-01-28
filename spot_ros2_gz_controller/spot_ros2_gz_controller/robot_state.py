@@ -57,6 +57,12 @@ class RobotState:
         self.H_w_base = np.zeros((4,4))
         self.H_base_w = np.zeros((4,4))
 
+        # TODO: Load these params from file instead of hardcode them
+        self.I = np.array([[0.287877,   0.0014834,    -0.0347842],
+                           [0.0014834,  1.31868,      -0.000519074],
+                           [-0.0347842, -0.000519074, 1.18915]])
+        self.mass = 20.492
+
         # using drake library for kinematics and dynamics calculation
         # https://github.com/RobotLocomotion/drake
         self.plant = MultibodyPlant(time_step=0.0)
@@ -185,32 +191,6 @@ class RobotState:
             self.update_pose(odom_msg)
             self.update_joints(jointstate_msg)
             self.update_feet()
-
-    def get_state_vec(self):
-        """
-        Returns the full 13-dimensional state vector required by the MPC controller.
-
-        The state vector consists of:
-        - θ (roll, pitch, yaw angles) [3]
-        - p (position) [3]
-        - ω (angular velocity) [3]
-        - ṗ (linear velocity) [3]
-        - g (gravity constant) [1]
-
-        Returns:
-            np.ndarray: 13-element state vector [θ, p, ω, ṗ, g]
-        """
-        state = np.zeros(13, dtype=np.float32)
-
-        state[0:3] = self.theta  # [roll, pitch, yaw]
-        state[3:6] = self.p
-        state[6:9] = self.omega
-        state[9:12] = self.p_dot
-
-        # Add gravity
-        state[12] = -9.81
-
-        return state
 
     def __str__(self):
         output = "===== Robot State ===== \n"

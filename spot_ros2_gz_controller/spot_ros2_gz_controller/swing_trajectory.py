@@ -5,7 +5,6 @@ from .robot_state import RobotState
 from .gait_scheduler import GaitScheduler
 
 
-
 class SwingTrajectory():
     def __init__(self, swing_height = 0.1):
         
@@ -48,8 +47,8 @@ class SwingTrajectory():
         foot_pos = robot_state.foot_pos # current foot positions in body frame
         foot_vel = robot_state.foot_vel # current foot velocities in body frame
         hip_pos  = robot_state.hip_pos  # current hip positions in body frame
-        com_pos_w = robot_state.p         # CoM position in world frame
-        com_vel_w = robot_state.p_dot     # CoM velocity in world frame
+        com_pos_w = robot_state.p       # CoM position in world frame
+        com_vel_w = robot_state.p_dot   # CoM velocity in world frame
 
         H_wb = robot_state.H_w_base # transformation matrix from body to world frame 
         H_bw = robot_state.H_base_w # transformation matrix from world to body frame
@@ -63,7 +62,7 @@ class SwingTrajectory():
 
         # plan new foot placement for legs that need planning
         for leg_idx in legs_for_replanning:
-            print(leg_idx)
+            # print(leg_idx)
             t_stance, t_swing = gait_schedule.t_stance, gait_schedule.t_swing
 
             # calculate the desired foot position in world frame
@@ -76,7 +75,7 @@ class SwingTrajectory():
         # update the desired foot position and velocity based on current phase and planned trajectory
         for leg_idx in range(4):
             if self.foot_state_map["states"][leg_idx] == "swing":
-                print(leg_idx)
+                # print(leg_idx)
                 phase_time = gait_schedule.current_phase - self.foot_state_map["transition_time"][leg_idx]
                 swing_traj = self.foot_state_map["trajectories"][leg_idx]
                 if swing_traj is not None:
@@ -91,23 +90,23 @@ class SwingTrajectory():
                     # update the desired foot position and velocity
                     self.foot_pos_des[leg_idx, :] = foot_pos_des_b
                     self.foot_vel_des[leg_idx, :] = foot_vel_des_b
-                    print(f"desired foot position {foot_pos_des_b}")
-                    print(f"desired foot velocity {foot_vel_des_b}")
+                    # print(f"desired foot position {foot_pos_des_b}")
+                    # print(f"desired foot velocity {foot_vel_des_b}")
 
     def foot_planner(self, t_stance, H_wb, p_w, pdot_w, foot_w, pdot_d, hip):
         # convert to world coordinate frame
         # foot_w = np.matmul(H_wb, np.append(foot_position, 1))[:3]
         hip_w = np.matmul(H_wb, np.append(hip, 1))[:3]
         pdot_d_w = np.matmul(H_wb[:3,:3], pdot_d)
-        print(f"pdot_d {pdot_d_w}")
+        # print(f"pdot_d {pdot_d_w}")
 
         # Raibert heuristic
         foot_des = hip_w + (t_stance*pdot_d_w/2) + np.sqrt(p_w[2]/9.81) * (pdot_w - pdot_d_w)
 
         # TODO estimate ground level
         foot_des[2] = foot_w[2]
-        print(f"current {foot_w}")
-        print(f"desired {foot_des}")
+        # print(f"current {foot_w}")
+        # print(f"desired {foot_des}")
         return foot_des
 
     def generate_swing_trajectory(self, start_pos, end_pos, t_swing):
