@@ -1,14 +1,14 @@
-from typing import Optional
-from pathlib import Path
-
-import rclpy
+import rclpy, time
 from rclpy.node import Node
 from rclpy.callback_groups import ReentrantCallbackGroup
 from nav_msgs.msg import Odometry
+from rosgraph_msgs.msg import Clock
 from sensor_msgs.msg import JointState
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 from ament_index_python.packages import get_package_share_directory
 from std_srvs.srv import Trigger
+from typing import Optional
+from pathlib import Path
 
 from .robot_state import RobotState
 from .gait_scheduler import GaitScheduler
@@ -18,7 +18,7 @@ from .swing_trajectory import SwingTrajectory
 class SpotController(Node):
     def __init__(self):
         super().__init__('spot_controller')
- 
+
         # Service TODO: separate the service into a different file
         # joint names in order
         self.joint_names = [
@@ -27,7 +27,7 @@ class SpotController(Node):
             'rear_left_hip_x',   'rear_left_hip_y',   'rear_left_knee',
             'rear_right_hip_x',  'rear_right_hip_y',  'rear_right_knee'
         ]
-        
+
         # joint positions for standing pose
         self.standing_pose = [
             0.0, 0.5, -1.0,  # front left leg
@@ -35,7 +35,7 @@ class SpotController(Node):
             0.0, 0.5, -1.0,  # rear left leg
             0.0, 0.5, -1.0   # rear right leg
         ]
-        
+
         # Joint positions for sitting pose
         self.sitting_pose = [
             0.0, 1.5, -2.7,  # front left leg
@@ -43,17 +43,17 @@ class SpotController(Node):
             0.0, 1.5, -2.7,  # rear left leg
             0.0, 1.5, -2.7   # rear right leg
         ]
-        
+
         # Create callback group for services
         self.callback_group = ReentrantCallbackGroup()
-        
+
         self.stand_service = self.create_service(
             Trigger,
             'spot/stand',
             self.handle_stand,
             callback_group=self.callback_group
         )
-        
+
         self.sit_service = self.create_service(
             Trigger,
             'spot/sit',
@@ -63,6 +63,13 @@ class SpotController(Node):
 
         # Control subscribe to /cmd_vel and publish to /joint_trajectory
         spot_model_description = get_package_share_directory('spot_ros2_description')
+
+        self.clock_sub = self.create_subscription(
+            Clock,
+            '/clock',
+            self.clock_callback,
+            10
+        )
 
         self.joint_states_sub = self.create_subscription(
             JointState,
@@ -84,62 +91,76 @@ class SpotController(Node):
             10
         )
 
+        self.clock_msg: Optional[Clock] = None
         self.last_jointstate_msg: Optional[JointState] = None
         self.last_odometry_msg: Optional[Odometry] = None
 
         model_sdf = Path(spot_model_description) / 'models' / 'spot' / 'model.sdf'
         self.robot_state = RobotState(str(model_sdf))
-        self.gait_scheduler = GaitScheduler(gait_cycle=0.5, start_time=self.get_clock().now())
-        self.mpc_controller = MPCController()
-        self.swing_trajectory_generator = SwingTrajectory()
+        self.initialized = False
 
-        self.create_timer(1/30, self.high_level_control_callback) 
-        self.create_timer(1/1000.0, self.state_estimation_callback)
-        self.create_timer(1/4500.0, self.leg_control_callback)
+        self.create_timer(1/1000.0, self.controller_callback)
+        # self.create_timer(1/30, self.high_level_control_callback)
+        # self.create_timer(1/4500.0, self.leg_control_callback)
 
-        self.get_logger().info('Spot controller initialized.')
-
+    def clock_callback(self, msg: Clock):
+        print(f"clock {msg.clock.nanosec}")
+        self.clock_msg = msg
 
     def joint_states_callback(self, msg: JointState):
         self.last_jointstate_msg = msg
-    
+
     def odometry_callback(self, msg: Odometry):
         self.last_odometry_msg = msg
 
-    def high_level_control_callback(self):
-        # horizon_steps = 16
-        # # Get current robot state
-        # current_robot_state = self.robot_state.get_state_vec()
-        # current_contact_schedule = self.gait_scheduler.get_contact_schedule(horizon_steps)
-        # print(f"Current Phase: {self.gait_scheduler.current_phase:.3f}\n")
-        pass
+    def controller_callback(self):
+        # wait for the simulation environment to start
+        if self.clock_msg is None or self.clock_msg.clock.nanosec == 0:
+            return
 
-    def state_estimation_callback(self):
+        if not self.initialized:
+           self.get_logger().info("Initializing controller...")
+           time.sleep(2.0)
+           self.robot_state.update(self.last_jointstate_msg, self.last_odometry_msg)
+           self.gait_scheduler = GaitScheduler(gait_cycle=0.5, start_time=self.get_clock().now())
+           self.mpc_controller = MPCController(self.robot_state)
+           self.swing_trajectory_generator = SwingTrajectory()
+           self.initialized = True
+           self.get_logger().info('Spot controller initialized.')       
+
+           return
+
         # TODO take cmd_vel for desired p_dot
         self.robot_state.update(self.last_jointstate_msg, self.last_odometry_msg)
         self.gait_scheduler.update_phase(self.get_clock().now())
         self.mpc_controller.udpate_control(self.robot_state, self.gait_scheduler)
-        self.swing_trajectory_generator.update_swingfoot_trajectory(self.robot_state, self.gait_scheduler) 
+        self.swing_trajectory_generator.update_swingfoot_trajectory(self.robot_state, self.gait_scheduler)
 
-        # R^{T}_{i}
+    # def high_level_control_callback(self):
+    #     # horizon_steps = 16
+    #     # # Get current robot state
+    #     # current_robot_state = self.robot_state.get_state_vec()
+    #     # current_contact_schedule = self.gait_scheduler.get_contact_schedule(horizon_steps)
+    #     # print(f"Current Phase: {self.gait_scheduler.current_phase:.3f}\n")
+    #     pass
 
-    def leg_control_callback(self):
-        # publish the JointTrajectory msg
-        pass
+    # def leg_control_callback(self):
+    #     # publish the JointTrajectory msg
+    #     pass
 
     # Service
     def publish_trajectory(self, positions, duration=2.0):
         """Publish a joint trajectory."""
         msg = JointTrajectory()
         msg.joint_names = self.joint_names
-        
+
         point = JointTrajectoryPoint()
         point.positions = positions
         point.velocities = [0.0] * len(positions)
         point.accelerations = [0.0] * len(positions)
         point.time_from_start.sec = int(duration)
         point.time_from_start.nanosec = int((duration % 1) * 1e9)
-        
+
         msg.points = [point]
         self.trajectory_pub.publish(msg)
 
