@@ -124,3 +124,5 @@ class SwingTrajectory():
         swing_traj = PiecewisePolynomial.CubicHermite(t_breakpoints, foot_pos_breakpoints, vel_breakpoints)
 
         return swing_traj
+
+    # def generate_reference_trajectory
