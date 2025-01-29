@@ -75,14 +75,14 @@ class SpotController(Node):
             JointState,
             '/joint_states',
             self.joint_states_callback,
-            10
+            0
         )
 
         self.joint_states_sub = self.create_subscription(
             Odometry,
             '/spot/odometry',
             self.odometry_callback,
-            10
+            0
         )
 
         self.trajectory_pub = self.create_publisher(
@@ -104,7 +104,6 @@ class SpotController(Node):
         # self.create_timer(1/4500.0, self.leg_control_callback)
 
     def clock_callback(self, msg: Clock):
-        print(f"clock {msg.clock.nanosec}")
         self.clock_msg = msg
 
     def joint_states_callback(self, msg: JointState):
@@ -114,22 +113,26 @@ class SpotController(Node):
         self.last_odometry_msg = msg
 
     def controller_callback(self):
-        # wait for the simulation environment to start
-        if self.clock_msg is None or self.clock_msg.clock.nanosec == 0:
+        # wait for the simulation environment to start to initialize the 
+        # controller
+        if (self.clock_msg is None or
+            self.clock_msg.clock.nanosec == 0 or
+            self.last_jointstate_msg is None or
+            self.last_odometry_msg is None):
             return
 
         if not self.initialized:
-           self.get_logger().info("Initializing controller...")
-           time.sleep(3.0)
+            self.get_logger().info("Initializing controller...")
+            time.sleep(3.0)
 
-           self.robot_state.update(self.last_jointstate_msg, self.last_odometry_msg)
-           self.gait_scheduler = GaitScheduler(gait_cycle=0.5, start_time=self.get_clock().now())
-           self.mpc_controller = MPCController(self.robot_state)
-           self.swing_trajectory_generator = SwingTrajectory(swing_height=0.1)
-           self.initialized = True
-           self.get_logger().info('Spot controller initialized.')       
+            self.robot_state.update(self.last_jointstate_msg, self.last_odometry_msg)
+            self.gait_scheduler = GaitScheduler(gait_cycle=0.5, start_time=self.get_clock().now())
+            self.mpc_controller = MPCController(self.robot_state)
+            self.swing_trajectory_generator = SwingTrajectory(swing_height=0.1)
+            self.initialized = True
+            self.get_logger().info('Spot controller initialized.')       
 
-           return
+            return
 
         # TODO take cmd_vel for desired p_dot
         self.robot_state.update(self.last_jointstate_msg, self.last_odometry_msg)
