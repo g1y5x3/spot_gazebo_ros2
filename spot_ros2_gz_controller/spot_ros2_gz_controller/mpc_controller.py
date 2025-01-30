@@ -5,12 +5,7 @@ from scipy.linalg import expm
 from .robot_state import RobotState
 from .gait_scheduler import GaitScheduler
 
-"""
-Carlo, Jared Di, Wensing, Patrick M., Katz, Benjamin, Bledt, Gerardo
-and Kim, Sangbae. 2018. "Dynamic Locomotion in the MIT Cheetah
-3 Through Convex Model-Predictive Control." IEEE International
-Conference on Intelligent Robots and Systems.
-"""
+
 
 def r_cross(r):
     """
@@ -28,10 +23,15 @@ def r_cross(r):
 
 class MPCController:
     def __init__(self, robot_state: RobotState, f_min=0, f_max=1):
-        self.f_max = f_max  # minimum normal force
-        self.f_min = f_min  # maximum normal force
         self.dt = 0.001
         self.horizon = 16
+        self.f_max = 666    # (N) maximum normal force
+        self.f_min = 10     # (N) minimum normal force
+
+        # quadratic programming weights
+        # r, p, y, x, y, z, wx, wy, wz, vx, vy, vz, g
+        self.L = np.diag([5., 5., 10., 10., 10., 50., 0.01, 0.01, 0.2, 0.2, 0.2, 0.2, 0.])
+        self.K = np.diag([1e-5, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5])
 
         # initialized the desired trajectory as the robot initial pose
         self.p_x_des = robot_state.p[0]
@@ -40,7 +40,6 @@ class MPCController:
         self.roll_des  = robot_state.theta[0]
         self.pitch_des = robot_state.theta[1]
         self.yaw_des   = robot_state.theta[2]
-
         print(f"p_x_des {self.p_x_des}")
         print(f"p_y_des {self.p_y_des}")
 
@@ -56,7 +55,7 @@ class MPCController:
         yaw = robot_state.theta[2]
         foot_pos = robot_state.foot_pos
         mass = robot_state.mass
-        print(f"current state vecotr {x}")
+        # print(f"current state vecotr {x}")
 
         # Generate reference trajectory for only xy position and yaw
         # NOTE this part doesn't feel like they blong here
@@ -89,7 +88,7 @@ class MPCController:
         square_matrix = np.zeros((25, 25)) 
         square_matrix[0:13, 0:13] = Ac * self.dt
         square_matrix[0:13, 13:25] = Bc * self.dt
-        print(f"square matrix {square_matrix.shape}")
+        # print(f"square matrix {square_matrix.shape}")
 
         #     [[Ac, Bc],          [[Ad, Bd],
         # exp( [ 0,  0]] * dt) =   [ 0,  I]]
@@ -97,7 +96,33 @@ class MPCController:
         Ad = matrix_exponential[0:13, 0:13]
         Bd = matrix_exponential[0:13, 13:25]
 
-        # QP formulation (Eq 31, 32)
+        # QP formulation
+
+        # Carlo, Jared Di, Wensing, Patrick M., Katz, Benjamin, Bledt, Gerardo
+        # and Kim, Sangbae. 2018. "Dynamic Locomotion in the MIT Cheetah
+        # 3 Through Convex Model-Predictive Control." IEEE International
+        # Conference on Intelligent Robots and Systems.
+        # (Eq 31, 32)
+
+        # J. L. Jerez, E. C. Kerrigan and G. A. Constantinides, "A condensed and 
+        # sparse QP formulation for predictive control," 2011 50th IEEE 
+        # Conference on Decision and Control and European Control Conference 
+        # (Eq 7)
+
+        # Precompute powers of Ad: [I, Ad, Ad^2, ..., Ad^horizon]
+        power_of_A = [np.identity(13)]
+        for i in range(self.horizon):
+            power_of_A.append(power_of_A[i] @ Ad)
+
+        A_qp = np.vstack(power_of_A[1:self.horizon+1])
+        print(A_qp.shape)
+
+        B_qp =  np.zeros((13 * self.horizon, 12 * self.horizon))
+        for i in range(self.horizon):
+            for j  in range(self.horizon):
+                if i >= j: 
+                    B_qp[13*i:13*(i+1), 12*j:12*(j+1)] = power_of_A[i-j] @ Bd
+
 
     # TODO Add yaw rate
     def generate_reference_trajectory(self, com_vel_des):
