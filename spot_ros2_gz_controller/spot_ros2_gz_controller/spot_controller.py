@@ -75,14 +75,14 @@ class SpotController(Node):
             JointState,
             '/joint_states',
             self.joint_states_callback,
-            0
+            10
         )
 
         self.joint_states_sub = self.create_subscription(
             Odometry,
             '/spot/odometry',
             self.odometry_callback,
-            0
+            10
         )
 
         self.trajectory_pub = self.create_publisher(
@@ -119,6 +119,7 @@ class SpotController(Node):
             self.clock_msg.clock.nanosec == 0 or
             self.last_jointstate_msg is None or
             self.last_odometry_msg is None):
+
             return
 
         if not self.initialized:
