@@ -127,8 +127,8 @@ class SpotController(Node):
             time.sleep(3.0)
 
             self.robot_state.update(self.last_jointstate_msg, self.last_odometry_msg)
-            self.gait_scheduler = GaitScheduler(gait_cycle=0.5, start_time=self.get_clock().now())
-            self.mpc_controller = MPCController(self.robot_state)
+            self.gait_scheduler = GaitScheduler(gait_cycle=0.5, horizon=16, start_time=self.get_clock().now())
+            self.mpc_controller = MPCController(self.robot_state, gait_cycle=0.5, horizon=16)
             self.swing_trajectory_generator = SwingTrajectory(swing_height=0.1)
             self.initialized = True
             self.get_logger().info('Spot controller initialized.')       

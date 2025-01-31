@@ -2,14 +2,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class GaitScheduler:
-    def __init__(self, gait_cycle=0.5, start_time=0, timesteps=16):
+    def __init__(self, gait_cycle=0.5, horizon=16, start_time=0):
         self.gait_cycle = gait_cycle    # in sec
         self.duty_factor = 0.5          # portion of cycle spent in stance
         self.t_stance = self.duty_factor * self.gait_cycle
         self.t_swing = self.gait_cycle - self.t_stance
 
         self.t_start = start_time
-        self.timesteps  = timesteps
+        self.horizon = horizon
 
         self.current_gait = 'trot'
         self.phase_offset = {
@@ -19,6 +19,7 @@ class GaitScheduler:
 
         self.current_phase = 0.0    # current_phase /in [0,1)
         self.phase_map = [0.0, 0.0, 0.0, 0.0]   # FL, FR, RL, RR
+        self.contact_schedule = np.zeros((4, horizon))
 
     def update_phase(self, t):
         dt = (t - self.t_start).nanoseconds / 1e9
@@ -27,33 +28,27 @@ class GaitScheduler:
         for leg in range(4):
             stance_start = self.phase_offset[self.current_gait][leg]
             self.phase_map[leg] = (self.current_phase - stance_start) % 1.0
+        
+        self.get_contact_schedule()
+        print(f"phase map {self.phase_map}")
+        print(f"contact schedule {self.contact_schedule}")
+
+        # gait table is used for setting constraints of mpc table
 
         # print(f"phase map {self.phase_map}")
 
     def get_leg_state(self, leg_idx):
         return "stance" if self.phase_map[leg_idx] < self.duty_factor else "swing"
 
-    def get_contact_schedule(self, horizon_steps):
-        """
-        Generate contact schedule for the full MPC horizon.
-        The schedule always looks ahead for the full horizon,
-        regardless of current phase.
-            
-        Args:
-            horizon_steps: Number of timesteps to plan ahead
-        """
-        contact_schedule = np.zeros((4, horizon_steps))
+    def get_contact_schedule(self):
     
-        for timestep in range(horizon_steps):
-            future_phase = (self.current_phase + timestep/horizon_steps) % 1.0
+        for timestep in range(self.horizon):
+            future_phase = (self.current_phase + timestep/self.horizon) % 1.0
 
             for leg in range(4):
                 stance_start = self.phase_offset[self.current_gait][leg]
                 leg_phase = (future_phase - stance_start) % 1.0
-                contact_schedule[leg, timestep] = 1.0 if leg_phase < self.duty_factor else 0.0
-    
-        return contact_schedule
-
+                self.contact_schedule[leg, timestep] = 1.0 if leg_phase < self.duty_factor else 0.0
 
 if __name__ == "__main__":
 
