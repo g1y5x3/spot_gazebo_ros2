@@ -30,8 +30,8 @@ class GaitScheduler:
             self.phase_map[leg] = (self.current_phase - stance_start) % 1.0
         
         self.get_contact_schedule()
-        print(f"phase map {self.phase_map}")
-        print(f"contact schedule {self.contact_schedule}")
+        # print(f"phase map {self.phase_map}")
+        # print(f"contact schedule {self.contact_schedule}")
 
         # gait table is used for setting constraints of mpc table
 
