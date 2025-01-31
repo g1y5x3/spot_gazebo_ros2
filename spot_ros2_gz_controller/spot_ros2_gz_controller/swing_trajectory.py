@@ -17,6 +17,7 @@ class SwingTrajectory():
 
         self.K_p = np.zeros((3,3))
         self.K_d = np.zeros((3,3))
+
         self.tau_ff = 0
 
         self.foot_state_map = {
@@ -84,14 +85,12 @@ class SwingTrajectory():
                     foot_vel_des_swing = swing_traj.derivative(1).value(phase_time).flatten()
 
                     # transform desired foot position and velocity back to body frame
-                    foot_pos_des_b = np.matmul(H_bw, np.append(foot_pos_des_swing, 1))[:3]
-                    foot_vel_des_b = np.matmul(H_bw[:3, :3], foot_vel_des_swing)
+                    foot_pos_des = np.matmul(H_bw, np.append(foot_pos_des_swing, 1))[:3]
+                    foot_vel_des = np.matmul(H_bw[:3, :3], foot_vel_des_swing)
                     
                     # update the desired foot position and velocity
-                    self.foot_pos_des[leg_idx, :] = foot_pos_des_b
-                    self.foot_vel_des[leg_idx, :] = foot_vel_des_b
-                    # print(f"desired foot position {foot_pos_des_b}")
-                    # print(f"desired foot velocity {foot_vel_des_b}")
+                    self.foot_pos_des[leg_idx, :] = foot_pos_des
+                    self.foot_vel_des[leg_idx, :] = foot_vel_des
 
     def foot_planner(self, t_stance, H_wb, p_w, pdot_w, foot_w, pdot_d, hip):
         # convert to world coordinate frame

@@ -33,10 +33,6 @@ class GaitScheduler:
         # print(f"phase map {self.phase_map}")
         # print(f"contact schedule {self.contact_schedule}")
 
-        # gait table is used for setting constraints of mpc table
-
-        # print(f"phase map {self.phase_map}")
-
     def get_leg_state(self, leg_idx):
         return "stance" if self.phase_map[leg_idx] < self.duty_factor else "swing"
 

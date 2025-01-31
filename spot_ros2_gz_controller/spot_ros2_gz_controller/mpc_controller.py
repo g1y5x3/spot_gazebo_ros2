@@ -6,7 +6,6 @@ from .robot_state import RobotState
 from .gait_scheduler import GaitScheduler
 
 
-
 def r_cross(r):
     """
     Compute [r]×
@@ -48,6 +47,8 @@ class MPCController:
         print(f"p_x_des {self.p_x_des}")
         print(f"p_y_des {self.p_y_des}")
 
+        self.f = np.zeros(12)
+
     # TODO reduce the MPC calculation frequency
     def udpate_control(self, robot_state: RobotState, gait_schedule: GaitScheduler):
         # TODO: THIS SHOULD BE IN TRAJECTORY CLASS NOT HERE
@@ -78,18 +79,27 @@ class MPCController:
 
         C, C_lb, C_ub = self.QP_constraints(gait_schedule.contact_schedule)
 
-        qp_problem = MathematicalProgram()
-        U = qp_problem.NewContinuousVariables(12 * self.horizon, 'U')
-
-        qp_problem.AddQuadraticCost(H, g, U)
-        qp_problem.AddLinearConstraint(C, C_lb, C_ub, U)
-
-        result = Solve(qp_problem)
-        # print(result.GetSolution(U)[:12])
+        U = self.solve_QP(H, g, C, C_lb, C_ub)
 
         # "The desired ground reaction forces are then the first 3n elements of U"
-        return result.GetSolution(U)[:12]
+        # print(U[:12])
+        self.f = U[:12]
 
+    def get_state_vec(self, robot_state: RobotState):
+        # - θ (roll, pitch, yaw angles) [3]
+        # - p (position) [3]
+        # - ω (angular velocity) [3]
+        # - ṗ (linear velocity) [3]
+        # - g (gravity constant) [1]
+
+        state = np.zeros(13)
+        state[0:3]  = robot_state.theta
+        state[3:6]  = robot_state.p
+        state[6:9]  = robot_state.omega
+        state[9:12] = robot_state.p_dot
+        state[12]   = -9.81
+
+        return state
 
     # TODO Add yaw rate
     def generate_reference_trajectory(self, com_vel_des):
@@ -155,26 +165,19 @@ class MPCController:
         # where H = 2(B_qpᵀ L B_qp + K)    (Eq. 31)
         #       g = 2B_qpᵀ L(A_qp x₀ - y)  (Eq. 32)
 
-        # Carlo, Jared Di, Wensing, Patrick M., Katz, Benjamin, Bledt, Gerardo
-        # and Kim, Sangbae. 2018. "Dynamic Locomotion in the MIT Cheetah
-        # 3 Through Convex Model-Predictive Control." IEEE International
-        # Conference on Intelligent Robots and Systems.
-        # (Eq 31, 32)
-
         # Precompute powers of Ad: [I, Ad, Ad^2, ..., Ad^horizon]
         power_of_A = [np.identity(13)]
         for i in range(self.horizon):
             power_of_A.append(power_of_A[i] @ Ad)
 
         A_qp = np.vstack(power_of_A[1:self.horizon+1])
-        # print(A_qp.shape)
 
         B_qp =  np.zeros((13 * self.horizon, 12 * self.horizon))
         for i in range(self.horizon):
             for j  in range(self.horizon):
                 if i >= j:
                     B_qp[13*i:13*(i+1), 12*j:12*(j+1)] = power_of_A[i-j] @ Bd
-        
+
         H = 2 * (B_qp.T @ self.L @ B_qp + self.K)
         g = 2 * B_qp.T @ self.L @ (A_qp @ x - x_ref)
 
@@ -200,32 +203,16 @@ class MPCController:
                 C_ub[5*idx : 5*idx+4] = 0
                 C_ub[5*idx+4] = contact_schedule[j, i] * self.fz_max
         # print(C, C_lb, C_ub)
-        
+
         return C, C_lb, C_ub
 
-    def get_state_vec(self, robot_state: RobotState):
-        """
-        Returns the full 13-dimensional state vector required by the MPC controller.
+    def solve_QP(self, H, g, C, C_lb, C_ub):
+        qp_problem = MathematicalProgram()
+        U = qp_problem.NewContinuousVariables(12 * self.horizon, 'U')
 
-        The state vector consists of:
-        - θ (roll, pitch, yaw angles) [3]
-        - p (position) [3]
-        - ω (angular velocity) [3]
-        - ṗ (linear velocity) [3]
-        - g (gravity constant) [1]
+        qp_problem.AddQuadraticCost(H, g, U)
+        qp_problem.AddLinearConstraint(C, C_lb, C_ub, U)
 
-        Returns:
-            np.ndarray: 13-element state vector [θ, p, ω, ṗ, g]
-        """
-        state = np.zeros(13)
-        state[0:3]  = robot_state.theta
-        state[3:6]  = robot_state.p
-        state[6:9]  = robot_state.omega
-        state[9:12] = robot_state.p_dot
-        state[12]   = -9.81
+        result = Solve(qp_problem)
 
-        return state
-
-    # dynamic constraints: \dot{x} = A_{c}x + B_{c}u
-    # def construct_dynamics(self, x, u):
-
+        return result.GetSolution(U)

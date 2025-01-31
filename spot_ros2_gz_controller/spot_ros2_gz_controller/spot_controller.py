@@ -141,17 +141,9 @@ class SpotController(Node):
         self.mpc_controller.udpate_control(self.robot_state, self.gait_scheduler)
         self.swing_trajectory_generator.update_swingfoot_trajectory(self.robot_state, self.gait_scheduler)
 
-    # def high_level_control_callback(self):
-    #     # horizon_steps = 16
-    #     # # Get current robot state
-    #     # current_robot_state = self.robot_state.get_state_vec()
-    #     # current_contact_schedule = self.gait_scheduler.get_contact_schedule(horizon_steps)
-    #     # print(f"Current Phase: {self.gait_scheduler.current_phase:.3f}\n")
-    #     pass
-
-    # def leg_control_callback(self):
-    #     # publish the JointTrajectory msg
-    #     pass
+        # self.leg_controller(self.trajectory_pub, 
+        #                     self.robot_state, self.gait_scheduler, 
+        #                     self.mpc_controller, self.swing_trajectory_generator)
 
     # Service
     def publish_trajectory(self, positions, duration=2.0):
