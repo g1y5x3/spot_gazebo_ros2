@@ -69,18 +69,18 @@ class MPCController:
         self.p_x_des += 0.001 * com_vel_des_w[0]
         self.p_y_des += 0.001 * com_vel_des_w[1]
 
-        # # MPC solver (NOTE: could happen less frequent)
-        # start = time.perf_counter()
-        # x_ref = self.generate_reference_trajectory(com_vel_des_w)
-        # Ac, Bc = self.construct_state_space_model(yaw, foot_pos, robot_state.I)
-        # Ad, Bd = self.linear_discretize(Ac, Bc)
-        # H, g = self.QP_formulation(Ad, Bd, x, x_ref)
-        # C, C_lb, C_ub = self.QP_constraints(gait_schedule.contact_schedule)
-        # U = self.solve_QP(H, g, C, C_lb, C_ub)
-        # print(f"MPC solve time: {time.perf_counter() - start:.5f}s")
+        # MPC solver (NOTE: could happen less frequent)
+        start = time.perf_counter()
+        x_ref = self.generate_reference_trajectory(com_vel_des_w)
+        Ac, Bc = self.construct_state_space_model(yaw, foot_pos, robot_state.I)
+        Ad, Bd = self.linear_discretize(Ac, Bc)
+        H, g = self.QP_formulation(Ad, Bd, x, x_ref)
+        C, C_lb, C_ub = self.QP_constraints(gait_schedule.contact_schedule)
+        U = self.solve_QP(H, g, C, C_lb, C_ub)
+        print(f"MPC solve time: {time.perf_counter() - start:.5f}s")
 
-        # # "The desired ground reaction forces are then the first 3n elements of U"
-        # self.f = U[:12]
+        # "The desired ground reaction forces are then the first 3n elements of U"
+        self.f = U[:12]
 
     def get_state_vec(self, robot_state: RobotState):
         # - θ (roll, pitch, yaw angles) [3]

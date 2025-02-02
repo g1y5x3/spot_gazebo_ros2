@@ -6,15 +6,12 @@ from .gait_scheduler import GaitScheduler
 
 
 class SwingTrajectory():
-    def __init__(self, swing_height = 0.3):
+    def __init__(self, swing_height = 0.1):
         
         self.swing_height = swing_height
 
         self.foot_pos_des = np.zeros((4,3))
         self.foot_vel_des = np.zeros((4,3))
-
-        self.K_p = np.zeros((3,3))
-        self.K_d = np.zeros((3,3))
 
         self.tau_ff = 0
 
