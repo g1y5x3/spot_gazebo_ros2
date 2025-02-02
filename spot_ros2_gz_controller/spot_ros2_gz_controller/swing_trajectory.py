@@ -6,12 +6,10 @@ from .gait_scheduler import GaitScheduler
 
 
 class SwingTrajectory():
-    def __init__(self, swing_height = 0.1):
+    def __init__(self, swing_height = 0.3):
         
         self.swing_height = swing_height
 
-        self.foot_pos = np.zeros((4,3))
-        self.foot_vel  = np.zeros((4,3))
         self.foot_pos_des = np.zeros((4,3))
         self.foot_vel_des = np.zeros((4,3))
 
@@ -46,7 +44,7 @@ class SwingTrajectory():
         com_vel_des = [1, 0.0, 0.0] # desired CoM velocity in body frame
 
         foot_pos = robot_state.foot_pos # current foot positions in body frame
-        foot_vel = robot_state.foot_vel # current foot velocities in body frame
+        # foot_vel = robot_state.foot_vel # current foot velocities in body frame
         hip_pos  = robot_state.hip_pos  # current hip positions in body frame
         com_pos_w = robot_state.p       # CoM position in world frame
         com_vel_w = robot_state.p_dot   # CoM velocity in world frame
@@ -55,8 +53,8 @@ class SwingTrajectory():
         H_bw = robot_state.H_base_w # transformation matrix from world to body frame
 
         # update current foot positions and velocities
-        self.foot_pos = foot_pos
-        self.foot_vel = foot_vel
+        # self.foot_pos = foot_pos
+        # self.foot_vel = foot_vel
 
         # update foot states and get legs that need replanning
         legs_for_replanning = self.update_foot_states(gait_schedule)

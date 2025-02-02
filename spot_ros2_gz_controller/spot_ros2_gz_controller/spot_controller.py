@@ -12,8 +12,9 @@ from pathlib import Path
 
 from .robot_state import RobotState
 from .gait_scheduler import GaitScheduler
-from .mpc_controller import MPCController
 from .swing_trajectory import SwingTrajectory
+from .mpc_controller import MPCController
+from .leg_controller import LegController
 
 class SpotController(Node):
     def __init__(self):
@@ -130,6 +131,7 @@ class SpotController(Node):
             self.gait_scheduler = GaitScheduler(gait_cycle=0.5, horizon=16, start_time=self.get_clock().now())
             self.mpc_controller = MPCController(self.robot_state, gait_cycle=0.5, horizon=16)
             self.swing_trajectory_generator = SwingTrajectory(swing_height=0.1)
+            self.leg_controller = LegController()
             self.initialized = True
             self.get_logger().info('Spot controller initialized.')       
 
@@ -141,9 +143,9 @@ class SpotController(Node):
         self.mpc_controller.udpate_control(self.robot_state, self.gait_scheduler)
         self.swing_trajectory_generator.update_swingfoot_trajectory(self.robot_state, self.gait_scheduler)
 
-        # self.leg_controller(self.trajectory_pub, 
-        #                     self.robot_state, self.gait_scheduler, 
-        #                     self.mpc_controller, self.swing_trajectory_generator)
+        self.leg_controller.update(self.trajectory_pub, 
+                                   self.robot_state, self.gait_scheduler, 
+                                   self.swing_trajectory_generator, self.mpc_controller)
 
     # Service
     def publish_trajectory(self, positions, duration=2.0):
