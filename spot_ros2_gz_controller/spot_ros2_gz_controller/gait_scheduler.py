@@ -8,6 +8,10 @@ class GaitScheduler:
         self.t_stance = self.duty_factor * self.gait_cycle
         self.t_swing = self.gait_cycle - self.t_stance
 
+        print(f"gait cycle {self.gait_cycle}")
+        print(f"swing time {self.t_swing}")
+        print(f"stance time {self.t_stance}")
+
         self.t_start = start_time
         self.horizon = horizon
 

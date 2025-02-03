@@ -35,19 +35,20 @@ class LegController():
         R = robot_state.H_base_w[:3,:3]
         f = mpc_ctrl.f
 
-        for leg_idx in range(4):
-            if gait_schedule.get_leg_state(leg_idx) == "swing":
-                # TODO Need to unify indexing
-                # print(leg_idx)
-                tau = J[leg_idx,:].T @ (
-                    self.Kp @ (p_ref[leg_idx,:] - p[:,leg_idx]) + 
-                    self.Kd @ (v_ref[leg_idx,:]-v[:,leg_idx])
-                )
-                # print(tau)
-                torque_cmds[3*leg_idx : 3*(leg_idx+1)] = tau
-            else:
-                tau = J[leg_idx,:].T @ R @ -f[3*leg_idx:3*(leg_idx+1)]
-                torque_cmds[3*leg_idx : 3*(leg_idx+1)] = tau
+        # for leg_idx in range(4):
+        leg_idx = 0
+        if gait_schedule.get_leg_state(leg_idx) == "swing":
+            # TODO Need to unify indexing
+            # print(leg_idx)
+            tau = J[leg_idx,:].T @ (
+                self.Kp @ (p_ref[leg_idx,:] - p[:,leg_idx]) + 
+                self.Kd @ (v_ref[leg_idx,:]-v[:,leg_idx])
+            )
+            # print(tau)
+            torque_cmds[3*leg_idx : 3*(leg_idx+1)] = tau
+        # else:
+            # tau = J[leg_idx,:].T @ R @ -f[3*leg_idx:3*(leg_idx+1)]
+            # torque_cmds[3*leg_idx : 3*(leg_idx+1)] = tau
 
         msg = JointTrajectory()
         msg.joint_names = self.joint_names

@@ -27,15 +27,15 @@ class MPCController:
         self.horizon = horizon
         self.fz_max = 666    # (N) maximum normal force
         self.fz_min = 10     # (N) minimum normal force
-        self.mu = 0.6
+        self.mu = 0.5
 
         # quadratic programming weights
         # r, p, y, x, y, z, wx, wy, wz, vx, vy, vz, g
         self.L = np.kron(np.identity(self.horizon),
-                         np.diag([5., 5., 10., 10., 10., 50., 0.01, 0.01, 0.2, 0.2, 0.2, 0.2, 0.]))
+                         np.diag([1., 1., 1., 0.01, 0.01, 50., 0.01, 0.01, 1, 1, 1, 1, 0.]))
 
         self.K = np.kron(np.identity(self.horizon),
-                         np.diag([1e-5, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5]))
+                         np.diag([1e-6, 1e-6, 1e-6, 1e-6, 1e-6, 1e-6, 1e-6, 1e-6, 1e-6, 1e-6, 1e-6, 1e-6]))
 
         # initialized the desired trajectory as the robot initial pose
         self.mass = robot_state.mass
@@ -45,6 +45,7 @@ class MPCController:
         self.roll_des  = robot_state.theta[0]
         self.pitch_des = robot_state.theta[1]
         self.yaw_des   = robot_state.theta[2]
+        print(f"mass {self.mass}")
         print(f"p_x_des {self.p_x_des}")
         print(f"p_y_des {self.p_y_des}")
 
@@ -66,18 +67,18 @@ class MPCController:
         # Generate reference trajectory for only xy position and yaw
         # NOTE this part doesn't feel like they blong here
         # TODO: self.yaw += dt_control ...
-        self.p_x_des += 0.001 * com_vel_des_w[0]
-        self.p_y_des += 0.001 * com_vel_des_w[1]
+        self.p_x_des += self.dt * com_vel_des_w[0]
+        self.p_y_des += self.dt * com_vel_des_w[1]
 
         # MPC solver (NOTE: could happen less frequent)
-        start = time.perf_counter()
+        # start = time.perf_counter()
         x_ref = self.generate_reference_trajectory(com_vel_des_w)
         Ac, Bc = self.construct_state_space_model(yaw, foot_pos, robot_state.I)
         Ad, Bd = self.linear_discretize(Ac, Bc)
         H, g = self.QP_formulation(Ad, Bd, x, x_ref)
         C, C_lb, C_ub = self.QP_constraints(gait_schedule.contact_schedule)
         U = self.solve_QP(H, g, C, C_lb, C_ub)
-        print(f"MPC solve time: {time.perf_counter() - start:.5f}s")
+        # print(f"MPC solve time: {time.perf_counter() - start:.5f}s")
 
         # "The desired ground reaction forces are then the first 3n elements of U"
         self.f = U[:12]

@@ -128,8 +128,8 @@ class SpotController(Node):
             time.sleep(3.0)
 
             self.robot_state.update(self.last_jointstate_msg, self.last_odometry_msg)
-            self.gait_scheduler = GaitScheduler(gait_cycle=0.5, horizon=16, start_time=self.get_clock().now())
-            self.mpc_controller = MPCController(self.robot_state, gait_cycle=0.5, horizon=16)
+            self.gait_scheduler = GaitScheduler(gait_cycle=2, horizon=16, start_time=self.get_clock().now())
+            self.mpc_controller = MPCController(self.robot_state, gait_cycle=self.gait_scheduler.gait_cycle, horizon=self.gait_scheduler.horizon)
             self.swing_trajectory_generator = SwingTrajectory(swing_height=0.1)
             self.leg_controller = LegController()
             self.initialized = True
@@ -140,7 +140,7 @@ class SpotController(Node):
         # TODO take cmd_vel for desired p_dot
         self.robot_state.update(self.last_jointstate_msg, self.last_odometry_msg)
         self.gait_scheduler.update_phase(self.get_clock().now())
-        self.mpc_controller.udpate_control(self.robot_state, self.gait_scheduler)
+        # self.mpc_controller.udpate_control(self.robot_state, self.gait_scheduler)
         self.swing_trajectory_generator.update_swingfoot_trajectory(self.robot_state, self.gait_scheduler)
 
         self.leg_controller.update(self.trajectory_pub, 
