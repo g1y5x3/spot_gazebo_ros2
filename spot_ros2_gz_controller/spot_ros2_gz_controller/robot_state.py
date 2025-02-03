@@ -146,8 +146,8 @@ class RobotState:
         foot_frames = ["front_left_ee", "front_right_ee",
                        "rear_left_ee",  "rear_right_ee"]
 
-        hip_frames  = ["front_left_hip", "front_right_hip",
-                       "rear_left_hip",  "rear_right_hip"]
+        hip_frames  = ["front_left_upper_leg", "front_right_upper_leg",
+                       "rear_left_upper_leg",  "rear_right_upper_leg"]
 
         # B_p_i, B_v_i
         for i in range(4):
