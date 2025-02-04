@@ -8,6 +8,19 @@ from pydrake.multibody.plant import MultibodyPlant
 from pydrake.math import RollPitchYaw, RigidTransform
 from pydrake.common.eigen_geometry import Quaternion
 
+def quat_to_euler(q):
+    quat = Quaternion(w=q.w, x=q.x, y=q.y, z=q.z)
+    rpy = RollPitchYaw(quat.rotation())
+
+    return np.array([rpy.roll_angle(), rpy.pitch_angle(), rpy.yaw_angle()])
+    
+def pose_to_homogeneous(p, q):
+    quat = Quaternion(w=q.w, x=q.x, y=q.y, z=q.z)
+    translation = [p.x, p.y, p.z]
+    T = RigidTransform(quaternion=quat, p=translation)
+
+    return T.GetAsMatrix4()
+
 def invert_homogeneous_transform(H):
     # Extract the rotation matrix and translation vector
     R = H[:3, :3]  # 3x3 rotation matrix
@@ -58,10 +71,11 @@ class RobotState:
         self.H_base_w = np.zeros((4,4))
 
         # TODO: Load these params from file instead of hardcode them
-        self.I = np.array([[0.287877,   0.0014834,    -0.0347842],
-                           [0.0014834,  1.31868,      -0.000519074],
-                           [-0.0347842, -0.000519074, 1.18915]])
-        self.mass = 20.492
+        self.I = np.array([[ 0.287877,   0.0014834,   -0.0347842],
+                           [ 0.0014834,  1.31868,     -0.000519074],
+                           [-0.0347842, -0.000519074,  1.18915]])
+
+        self.mass = 38.492
 
         # using drake library for kinematics and dynamics calculation
         # https://github.com/RobotLocomotion/drake
@@ -72,22 +86,31 @@ class RobotState:
 
         current_positions_names = self.plant.GetPositionNames()
         current_positions = self.plant.GetPositions(self.context)
+
         print(f"Number of positions: {self.plant.num_positions()}")
         print(current_positions_names[7:19])
         print(current_positions[7:19])
 
-        current_velocitiy_names = self.plant.GetVelocityNames()
-        current_velocities_names = self.plant.GetVelocities(self.context)
-        # print(f"Number of velocities: {self.plant.num_velocities()}")
-        # print(current_velocitiy_names[6:18])
-        # print(current_velocities_names[6:18])
+    def update_pose(self, msg: Odometry):
+        # position and pose velocity
+        p = msg.pose.pose.position
+        self.p = np.array([p.x, p.y, p.z])
+        q = msg.pose.pose.orientation
+        self.theta = quat_to_euler(q)
+
+        pdot = msg.twist.twist.linear
+        self.p_dot = np.array([pdot.x, pdot.y, pdot.z])
+        qdot = msg.twist.twist.angular
+        self.omega = np.array([qdot.x, qdot.y, qdot.z])
+
+        # construct a homogeneous transformation matrix from body to world
+        self.H_w_base = pose_to_homogeneous(p, q)
+        self.H_base_w = invert_homogeneous_transform(self.H_w_base)
 
     def update_joints(self, msg: JointState):
-        # print(msg.name)
         for i, name in enumerate(msg.name):
             if name in self.joint_names:
                 idx = self.joint_names.index(name)
-                # print(idx)
                 self.joint_position[idx] = msg.position[i]
                 self.joint_velocity[idx] = msg.velocity[i]
 
@@ -101,40 +124,6 @@ class RobotState:
         # set the updated states back to context
         self.plant.SetPositions(self.context, current_positions)
         self.plant.SetVelocities(self.context, current_velocities)
-
-    # TODO: estimate the state based on sensors inputs to replace ground truth
-    # provided by gazebo
-    def update_pose(self, msg: Odometry):
-        # position and pose velocity
-        p = msg.pose.pose.position
-        pdot = msg.twist.twist.linear
-
-        self.p = np.array([p.x, p.y, p.z])
-        self.p_dot = np.array([pdot.x, pdot.y, pdot.z])
-
-        # orientation and angular velocity
-        q = msg.pose.pose.orientation
-        qdot = msg.twist.twist.angular
-
-        self.theta = self.quat_to_euler(q)
-        self.omega = np.array([qdot.x, qdot.y, qdot.z])
-
-        # construct a homogeneous transformation matrix from body to world
-        self.H_w_base = self.post_to_homogeneous(p, q)
-        self.H_base_w = invert_homogeneous_transform(self.H_w_base)
-
-    def quat_to_euler(self, q):
-        quat = Quaternion(w=q.w, x=q.x, y=q.y, z=q.z)
-        rpy = RollPitchYaw(quat.rotation())
-
-        return np.array([rpy.roll_angle(), rpy.pitch_angle(), rpy.yaw_angle()])
-    
-    def post_to_homogeneous(self, p, q):
-        quat = Quaternion(w=q.w, x=q.x, y=q.y, z=q.z)
-        translation = [p.x, p.y, p.z]
-        T = RigidTransform(quaternion=quat, p=translation)
-
-        return T.GetAsMatrix4()
 
     def update_feet(self):
         # TODO: make this part better
@@ -180,50 +169,18 @@ class RobotState:
                 frame_A=base_frame,
                 frame_E=base_frame
             )
+
+            # the first 7 elements were for [x, y, z, wx, wy, wz, w]
             self.foot_J[i] = foot_jacobian[:,i*3+7:i*3+10]
 
             # foot velocity B_v_i
             self.foot_vel[:,i] = foot_jacobian @ joint_velocity
+            print(f"{i} foot position {self.foot_pos[:,i]}")
+            print(f"{i} foot velocity {self.foot_vel[:,i]}")
+            # print(f"{i} foot jacobian {self.foot_J[i]}")
 
     # update the sensory readings, all 4 foot positions, jacobians, bias
     def update(self, jointstate_msg: JointState, odom_msg: Odometry):
-        if jointstate_msg is not None and odom_msg is not None:
-            self.update_pose(odom_msg)
-            self.update_joints(jointstate_msg)
-            self.update_feet()
-
-    def __str__(self):
-        output = "===== Robot State ===== \n"
-        # Group joints by leg
-        fl = f"FL: [{self.joint_position[0]:.3f}, {self.joint_position[1]:.3f},  {self.joint_position[2]:.3f}]"
-        fr = f"FR: [{self.joint_position[3]:.3f}, {self.joint_position[4]:.3f},  {self.joint_position[5]:.3f}]"
-        rl = f"RL: [{self.joint_position[6]:.3f}, {self.joint_position[7]:.3f},  {self.joint_position[8]:.3f}]"
-        rr = f"RR: [{self.joint_position[9]:.3f}, {self.joint_position[10]:.3f}, {self.joint_position[11]:.3f}]"
-
-        output += "joint positions (q):\n"
-        output += f"{fl}\n{fr}\n{rl}\n{rr}\n"
-
-        # Same format for velocities
-        fl_v = f"FL: [{self.joint_velocity[0]:.3f}, {self.joint_velocity[1]:.3f},  {self.joint_velocity[2]:.3f}]"
-        fr_v = f"FR: [{self.joint_velocity[3]:.3f}, {self.joint_velocity[4]:.3f},  {self.joint_velocity[5]:.3f}]"
-        rl_v = f"RL: [{self.joint_velocity[6]:.3f}, {self.joint_velocity[7]:.3f},  {self.joint_velocity[8]:.3f}]"
-        rr_v = f"RR: [{self.joint_velocity[9]:.3f}, {self.joint_velocity[10]:.3f}, {self.joint_velocity[11]:.3f}]"
-
-        output += "\njoint velocities (q_dot):\n"
-        output += f"{fl_v}\n{fr_v}\n{rl_v}\n{rr_v}\n"
-
-        # Position and Velocity
-        output += "\nposition (p):\n"
-        output += f"[{self.p[0]:.3f}, {self.p[1]:.3f}, {self.p[2]:.3f}]\n"
-
-        output += "\nvelocity (p_dot):\n"
-        output += f"[{self.p_dot[0]:.3f}, {self.p_dot[1]:.3f}, {self.p_dot[2]:.3f}]\n"
-
-        # Orientation and Angular Velocity
-        output += "\norientation (theta):\n"
-        output += f"[{self.theta[0]:.3f}, {self.theta[1]:.3f}, {self.theta[2]:.3f}]\n"
-
-        output += "\nangular velocity (omega):\n"
-        output += f"[{self.omega[0]:.3f}, {self.omega[1]:.3f}, {self.omega[2]:.3f}]\n"
-
-        return output
+        self.update_pose(odom_msg)
+        self.update_joints(jointstate_msg)
+        self.update_feet()
