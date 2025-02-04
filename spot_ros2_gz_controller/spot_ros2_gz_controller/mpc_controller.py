@@ -22,9 +22,12 @@ def r_cross(r):
 
 
 class MPCController:
-    def __init__(self, robot_state: RobotState, gait_cycle=0.5, horizon=16):
-        self.dt = gait_cycle/horizon
-        self.horizon = horizon
+    def __init__(self, robot_state: RobotState, gait_schedule: GaitScheduler):
+        # gait_cycle=0.5, horizon=16):
+        self.gait_cycle = gait_schedule.gait_cycle
+        self.horizon = gait_schedule.horizon
+        self.dt = self.gait_cycle/self.horizon
+
         self.fz_max = 666    # (N) maximum normal force
         self.fz_min = 10     # (N) minimum normal force
         self.mu = 0.5
@@ -55,7 +58,7 @@ class MPCController:
     def udpate_control(self, robot_state: RobotState, gait_schedule: GaitScheduler):
         # TODO: THIS SHOULD BE IN TRAJECTORY CLASS NOT HERE
         # also read com vel from control inputs
-        com_vel_des = [1, 0.0, 0.0]
+        com_vel_des = [1.2, 0.0, 0.0]
         com_vel_des_w = np.matmul(robot_state.H_w_base[:3,:3], com_vel_des)
 
         # Obtain the current state
