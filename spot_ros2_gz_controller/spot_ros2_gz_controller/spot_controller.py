@@ -96,11 +96,11 @@ class SpotController(Node):
         self.last_jointstate_msg: Optional[JointState] = None
         self.last_odometry_msg: Optional[Odometry] = None
 
-        model_sdf = Path(spot_model_description) / 'models' / 'spot' / 'model.sdf'
-        self.robot_state = RobotState(str(model_sdf))
+        self.robot_state = RobotState(str(Path(spot_model_description) / 'models' / 'spot' / 'model.sdf'))
         self.initialized = False
 
-        self.create_timer(1/1000.0, self.controller_callback)
+        self.create_timer(1/10.0, self.controller_callback)
+
         # self.create_timer(1/30, self.high_level_control_callback)
         # self.create_timer(1/4500.0, self.leg_control_callback)
 
@@ -114,8 +114,7 @@ class SpotController(Node):
         self.last_odometry_msg = msg
 
     def controller_callback(self):
-        # wait for the simulation environment to start to initialize the 
-        # controller
+        # wait for the simulation environment to start to initialize the controller
         if (self.clock_msg is None or
             self.clock_msg.clock.nanosec == 0 or
             self.last_jointstate_msg is None or
@@ -128,24 +127,27 @@ class SpotController(Node):
             time.sleep(3.0)
 
             self.robot_state.update(self.last_jointstate_msg, self.last_odometry_msg)
-            self.gait_scheduler = GaitScheduler(gait_cycle=1, horizon=16, start_time=self.get_clock().now())
-            self.mpc_controller = MPCController(self.robot_state, self.gait_scheduler)
-            self.swing_trajectory_generator = SwingTrajectory(swing_height=0.2)
-            self.leg_controller = LegController()
+            # self.gait_scheduler = GaitScheduler(gait_cycle=2, horizon=16, start_time=self.get_clock().now())
+            # self.mpc_controller = MPCController(self.robot_state, self.gait_scheduler)
+            # self.swing_trajectory_generator = SwingTrajectory(swing_height=0.2)
+            # self.leg_controller = LegController()
+
             self.initialized = True
             self.get_logger().info('Spot controller initialized.')       
+            time.sleep(3.0) # just to have time to inspect all the initialization messages
 
             return
 
-        # TODO take cmd_vel for desired p_dot
         self.robot_state.update(self.last_jointstate_msg, self.last_odometry_msg)
-        self.gait_scheduler.update_phase(self.get_clock().now())
-        self.mpc_controller.udpate_control(self.robot_state, self.gait_scheduler)
-        self.swing_trajectory_generator.update_swingfoot_trajectory(self.robot_state, self.gait_scheduler)
+        # self.gait_scheduler.update_phase(self.get_clock().now())
+        # # TODO take cmd_vel for desired p_dot
+        # com_vel = [1.2, 0, 0]
+        # self.mpc_controller.udpate_control(com_vel, self.robot_state, self.gait_scheduler)
+        # self.swing_trajectory_generator.update_swingfoot_trajectory(com_vel, self.robot_state, self.gait_scheduler)
 
-        self.leg_controller.update(self.trajectory_pub, 
-                                   self.robot_state, self.gait_scheduler, 
-                                   self.swing_trajectory_generator, self.mpc_controller)
+        # self.leg_controller.update(self.trajectory_pub, 
+        #                            self.robot_state, self.gait_scheduler, 
+        #                            self.swing_trajectory_generator, self.mpc_controller)
 
     # Service
     def publish_trajectory(self, positions, duration=2.0):

@@ -1,7 +1,7 @@
 import numpy as np
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import JointState
-from scipy.spatial.transform import Rotation as R
+
 from pydrake.multibody.tree import JointIndex, JacobianWrtVariable
 from pydrake.multibody.parsing import Parser
 from pydrake.multibody.plant import MultibodyPlant
@@ -15,6 +15,7 @@ def quat_to_euler(q):
     return np.array([rpy.roll_angle(), rpy.pitch_angle(), rpy.yaw_angle()])
     
 def pose_to_homogeneous(p, q):
+    # p - position, q - orientation
     quat = Quaternion(w=q.w, x=q.x, y=q.y, z=q.z)
     translation = [p.x, p.y, p.z]
     T = RigidTransform(quaternion=quat, p=translation)
@@ -89,7 +90,6 @@ class RobotState:
 
         print(f"Number of positions: {self.plant.num_positions()}")
         print(current_positions_names[7:19])
-        print(current_positions[7:19])
 
     def update_pose(self, msg: Odometry):
         # position and pose velocity
@@ -122,6 +122,9 @@ class RobotState:
         current_velocities[6:18] = self.joint_velocity
 
         # set the updated states back to context
+        # print(f"joint position {self.joint_position}")
+        # print(f"joint velocity {self.joint_velocity}")
+
         self.plant.SetPositions(self.context, current_positions)
         self.plant.SetVelocities(self.context, current_velocities)
 
@@ -170,13 +173,17 @@ class RobotState:
                 frame_E=base_frame
             )
 
+            # print(foot_jacobian.shape)
+            # print(foot_jacobian)
+            # print(foot_jacobian[:,i*3+7:i*3+10])
+
             # the first 7 elements were for [x, y, z, wx, wy, wz, w]
             self.foot_J[i] = foot_jacobian[:,i*3+7:i*3+10]
 
             # foot velocity B_v_i
             self.foot_vel[:,i] = foot_jacobian @ joint_velocity
-            print(f"{i} foot position {self.foot_pos[:,i]}")
-            print(f"{i} foot velocity {self.foot_vel[:,i]}")
+            # print(f"{i} foot position {self.foot_pos[:,i]}")
+            # print(f"{i} foot velocity {self.foot_vel[:,i]}")
             # print(f"{i} foot jacobian {self.foot_J[i]}")
 
     # update the sensory readings, all 4 foot positions, jacobians, bias
