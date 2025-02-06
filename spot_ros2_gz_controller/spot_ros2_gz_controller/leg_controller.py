@@ -49,12 +49,10 @@ class LegController():
             #     # print(f"tau {tau}")
             # else:
             if gait_schedule.get_leg_state(leg_idx) == "stance":
-                # print(f)
-                tau = J[leg_idx,:].T @ R_bw @ -f[3*leg_idx:3*(leg_idx+1)]
-                print(tau.shape)
+                tau = J[leg_idx,:].T @ R_bw @ f[3*leg_idx:3*(leg_idx+1)]
                 torque_cmds[3*leg_idx : 3*(leg_idx+1)] = tau
 
-        print(torque_cmds)
+        print(f"torque {torque_cmds}")
 
         msg = JointTrajectory()
         msg.joint_names = self.joint_names[3:]
