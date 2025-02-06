@@ -8,8 +8,8 @@ from .mpc_controller import MPCController
 
 class LegController():
     def __init__(self):
-        self.Kp = np.diag([500., 500., 500.])
-        self.Kd = np.diag([20., 20., 20.])
+        self.Kp = np.diag([40., 40., 50.])
+        self.Kd = np.diag([1., 1., 1.])
         self.joint_names = [
             'front_left_hip_x',  'front_left_hip_y',  'front_left_knee',
             'front_right_hip_x', 'front_right_hip_y', 'front_right_knee',
@@ -35,20 +35,21 @@ class LegController():
         R = robot_state.H_base_w[:3,:3]
         f = mpc_ctrl.f
 
-        # for leg_idx in range(4):
-        leg_idx = 0
-        if gait_schedule.get_leg_state(leg_idx) == "swing":
-            # TODO Need to unify indexing
-            # print(leg_idx)
-            tau = J[leg_idx,:].T @ (
-                self.Kp @ (p_ref[leg_idx,:] - p[:,leg_idx]) + 
-                self.Kd @ (v_ref[leg_idx,:]-v[:,leg_idx])
-            )
-            # print(tau)
-            torque_cmds[3*leg_idx : 3*(leg_idx+1)] = tau
-        # else:
-            # tau = J[leg_idx,:].T @ R @ -f[3*leg_idx:3*(leg_idx+1)]
-            # torque_cmds[3*leg_idx : 3*(leg_idx+1)] = tau
+        for leg_idx in range(4):
+            if gait_schedule.get_leg_state(leg_idx) == "swing":
+                # TODO Need to unify indexing
+                tau = J[leg_idx,:].T @ (
+                    self.Kp @ (p_ref[leg_idx,:] - p[:,leg_idx]) + 
+                    self.Kd @ (v_ref[leg_idx,:] - v[:,leg_idx])
+                )
+                torque_cmds[3*leg_idx : 3*(leg_idx+1)] = tau
+                # torque_cmds[3*(leg_idx+2) : 3*(leg_idx+3)] = tau
+                print(f"torque_cmds {torque_cmds}")
+                # print(leg_idx)
+                # print(f"tau {tau}")
+            else:
+                tau = J[leg_idx,:].T @ R @ -f[3*leg_idx:3*(leg_idx+1)]
+                torque_cmds[3*leg_idx : 3*(leg_idx+1)] = tau
 
         msg = JointTrajectory()
         msg.joint_names = self.joint_names

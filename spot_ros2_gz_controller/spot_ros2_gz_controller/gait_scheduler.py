@@ -2,9 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class GaitScheduler:
-    def __init__(self, gait_cycle=0.5, horizon=16, start_time=0):
+    def __init__(self, gait_cycle=0.5, horizon=16, start_time=0, gait='trot'):
         self.gait_cycle = gait_cycle    # in sec
-        self.duty_factor = 0.5          # portion of cycle spent in stance
+        self.duty_factor = 0.8          # portion of cycle spent in stance
         self.t_stance = self.duty_factor * self.gait_cycle
         self.t_swing = self.gait_cycle - self.t_stance
 
@@ -17,8 +17,9 @@ class GaitScheduler:
 
         self.current_gait = 'trot'
         self.phase_offset = {
-                  #  FL   FR   RL   RR
-            'trot': [0.0, 0.5, 0.5, 0.0]     
+                   #  FL   FR   RL   RR
+            'trot' : [0.0, 0.5, 0.5, 0.0],     
+            'stand': [0.0, 0.0, 0.0, 0.0]     
         }
 
         self.current_phase = 0.0    # current_phase /in [0,1)

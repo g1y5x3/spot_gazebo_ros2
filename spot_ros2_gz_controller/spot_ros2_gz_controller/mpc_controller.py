@@ -48,6 +48,7 @@ class MPCController:
         self.roll_des  = robot_state.theta[0]
         self.pitch_des = robot_state.theta[1]
         self.yaw_des   = robot_state.theta[2]
+
         print(f"mass {self.mass}")
         print(f"p_x_des {self.p_x_des}")
         print(f"p_y_des {self.p_y_des}")
@@ -55,10 +56,7 @@ class MPCController:
         self.f = np.zeros(12)
 
     # TODO reduce the MPC calculation frequency
-    def udpate_control(self, robot_state: RobotState, gait_schedule: GaitScheduler):
-        # TODO: THIS SHOULD BE IN TRAJECTORY CLASS NOT HERE
-        # also read com vel from control inputs
-        com_vel_des = [1.2, 0.0, 0.0]
+    def udpate_control(self, com_vel_des, robot_state: RobotState, gait_schedule: GaitScheduler):
         com_vel_des_w = np.matmul(robot_state.H_w_base[:3,:3], com_vel_des)
 
         # Obtain the current state

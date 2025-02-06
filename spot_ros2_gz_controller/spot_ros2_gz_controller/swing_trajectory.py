@@ -19,10 +19,7 @@ class SwingTrajectory():
             "transition_time": [0.0] * 4,
         }
 
-    def update_swingfoot_trajectory(self, robot_state: RobotState, gait_schedule: GaitScheduler):
-        # TODO: read com_vel from the control inputs
-        com_vel_des = [0.0, 0.0, 0.0] # desired CoM velocity in body frame
-
+    def update_swingfoot_trajectory(self, com_vel_des, robot_state: RobotState, gait_schedule: GaitScheduler):
         foot_pos = robot_state.foot_pos # current foot positions in body frame
         hip_pos  = robot_state.hip_pos  # current hip positions in body frame
         com_pos_w = robot_state.p       # CoM position in world frame
@@ -69,9 +66,9 @@ class SwingTrajectory():
                     foot_vel_des = np.matmul(H_bw[:3, :3], foot_vel_des_swing)
                     foot_acc_des = np.matmul(H_bw[:3, :3], foot_acc_des_swing)
 
-                    print(f"leg {leg_idx}, foot_pos {foot_pos_des}")
-                    print(f"leg {leg_idx}, foot_vel {foot_vel_des}")
-                    print(f"leg {leg_idx}, foot_acc {foot_acc_des}")
+                    # print(f"leg {leg_idx}, foot_pos {foot_pos_des}")
+                    # print(f"leg {leg_idx}, foot_vel {foot_vel_des}")
+                    # print(f"leg {leg_idx}, foot_acc {foot_acc_des}")
                     
                     # update the desired foot position and velocity
                     self.foot_pos_des[leg_idx, :] = foot_pos_des
