@@ -23,11 +23,9 @@ def r_cross(r):
 
 class MPCController:
     def __init__(self, robot_state: RobotState, gait_schedule: GaitScheduler):
-        # gait_cycle=0.5, horizon=16):
         self.gait_cycle = gait_schedule.gait_cycle
         self.horizon = gait_schedule.horizon
-        self.dt = self.gait_cycle/self.horizon
-
+        self.dt = 1/300
         self.fz_max = 666    # (N) maximum normal force
         self.fz_min = 10     # (N) minimum normal force
         self.mu = 0.5
@@ -38,7 +36,7 @@ class MPCController:
                          np.diag([1., 1., 1., 0.01, 0.01, 50., 0.01, 0.01, 1, 1, 1, 1, 0.]))
 
         self.K = np.kron(np.identity(self.horizon),
-                         np.diag([1e-6, 1e-6, 1e-6, 1e-6, 1e-6, 1e-6, 1e-6, 1e-6, 1e-6, 1e-6, 1e-6, 1e-6]))
+                         np.diag([1e-5, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5, 1e-5]))
 
         # initialized the desired trajectory as the robot initial pose
         self.mass = robot_state.mass
@@ -52,6 +50,7 @@ class MPCController:
         print(f"mass {self.mass}")
         print(f"p_x_des {self.p_x_des}")
         print(f"p_y_des {self.p_y_des}")
+        print(f"p_z_des {self.p_z_des}")
 
         self.f = np.zeros(12)
 
@@ -63,6 +62,7 @@ class MPCController:
         x = self.get_state_vec(robot_state)
         yaw      = robot_state.theta[2]
         foot_pos = robot_state.foot_pos
+        H_wb = robot_state.H_w_base
         # print(f"current state vecotr {x}")
 
         # Generate reference trajectory for only xy position and yaw
@@ -70,19 +70,22 @@ class MPCController:
         # TODO: self.yaw += dt_control ...
         self.p_x_des += self.dt * com_vel_des_w[0]
         self.p_y_des += self.dt * com_vel_des_w[1]
+        x_ref = self.generate_reference_trajectory(com_vel_des_w)
+        # print(f"com_vel_des_w {com_vel_des_w}")
+        # print(f"x_ref {x_ref}")
 
         # MPC solver (NOTE: could happen less frequent)
-        # start = time.perf_counter()
-        x_ref = self.generate_reference_trajectory(com_vel_des_w)
-        Ac, Bc = self.construct_state_space_model(yaw, foot_pos, robot_state.I)
+        start = time.perf_counter()
+        Ac, Bc = self.construct_state_space_model(yaw, H_wb, foot_pos, robot_state.I)
         Ad, Bd = self.linear_discretize(Ac, Bc)
         H, g = self.QP_formulation(Ad, Bd, x, x_ref)
         C, C_lb, C_ub = self.QP_constraints(gait_schedule.contact_schedule)
         U = self.solve_QP(H, g, C, C_lb, C_ub)
-        # print(f"MPC solve time: {time.perf_counter() - start:.5f}s")
+        print(f"MPC solve time: {time.perf_counter() - start:.5f}s")
 
         # "The desired ground reaction forces are then the first 3n elements of U"
         self.f = U[:12]
+        # print(self.f)
 
     def get_state_vec(self, robot_state: RobotState):
         # - θ (roll, pitch, yaw angles) [3]
@@ -119,7 +122,7 @@ class MPCController:
 
         return x_ref
 
-    def construct_state_space_model(self, yaw, foot_pos, I):
+    def construct_state_space_model(self, yaw, H_wb, foot_pos, I):
         # Construct state space model (Eq. 16, 17)
         Ac = np.zeros((13, 13))
         Bc = np.zeros((13, 3*4))
@@ -135,6 +138,8 @@ class MPCController:
 
         # \hat{I}^-1[r_i]x
         for i in range(4):
+            # foot_pos vector needs to be expressed in the world frame
+            foot_pos_w = np.matmul(H_wb, np.append(foot_pos[:,i], 1))[:3]
             Bc[6:9,  3*i:3*i+3] = np.linalg.inv(I_w) @ r_cross(foot_pos[:,i])
             Bc[9:12, 3*i:3*i+3] = np.identity(3) / self.mass
 
@@ -185,11 +190,11 @@ class MPCController:
     def QP_constraints(self, contact_schedule):
         # QP constraints
         constraint_coef_matrix = np.array([
-            [ 1,  0, -self.mu], #  f_x <= mu f_z
-            [-1,  0, -self.mu], # -f_x <= mu f_z
-            [ 0,  1, -self.mu], #  f_y <= mu f_z
-            [ 0, -1, -self.mu], # -f_y <= mu f_z
-            [ 0,  0,        1], # f_min <= f_z <= f_max
+            [ 1,  0, self.mu], #  f_x <= mu f_z
+            [-1,  0, self.mu], # -f_x <= mu f_z
+            [ 0,  1, self.mu], #  f_y <= mu f_z
+            [ 0, -1, self.mu], # -f_y <= mu f_z
+            [ 0,  0,       1], # f_min <= f_z <= f_max
         ])
         C = np.kron(np.identity(4*self.horizon), constraint_coef_matrix)
 
@@ -198,8 +203,8 @@ class MPCController:
         for i in range(self.horizon):
             for j in range(4):
                 idx = i * 4 + j
-                C_lb[5*idx : 5*idx+4] = -np.inf
-                C_ub[5*idx : 5*idx+4] = 0
+                # C_lb[5*idx : 5*idx+4] = -np.inf
+                C_ub[5*idx : 5*idx+4] = np.inf
                 C_ub[5*idx+4] = contact_schedule[j, i] * self.fz_max
         # print(C, C_lb, C_ub)
 

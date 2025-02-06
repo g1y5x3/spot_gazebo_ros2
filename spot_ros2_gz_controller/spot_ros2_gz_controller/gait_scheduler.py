@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class GaitScheduler:
-    def __init__(self, gait_cycle=0.5, horizon=16, start_time=0, gait='trot'):
+    def __init__(self, gait_cycle=1.0, horizon=16, start_time=0, gait='stand'):
         self.gait_cycle = gait_cycle    # in sec
         self.duty_factor = 0.8          # portion of cycle spent in stance
         self.t_stance = self.duty_factor * self.gait_cycle
@@ -32,12 +32,13 @@ class GaitScheduler:
 
         for leg in range(4):
             stance_start = self.phase_offset[self.current_gait][leg]
-            self.phase_map[leg] = (self.current_phase - stance_start) % 1.0
+            # self.phase_map[leg] = (self.current_phase + stance_start) % 1.0
+            self.phase_map[leg] = 2 if leg == 0 else 0
         
         self.get_contact_schedule()
 
-        # print(f"phase map {self.phase_map}")
-        # print(f"contact schedule {self.contact_schedule}")
+        # print(f"0 {self.get_leg_state(0)}, 1 {self.get_leg_state(1)}, 2 {self.get_leg_state(2)}, 3 {self.get_leg_state(3)}")
+        # print(self.contact_schedule)
 
     def get_leg_state(self, leg_idx):
         return "stance" if self.phase_map[leg_idx] < self.duty_factor else "swing"
@@ -50,7 +51,8 @@ class GaitScheduler:
             for leg in range(4):
                 stance_start = self.phase_offset[self.current_gait][leg]
                 leg_phase = (future_phase - stance_start) % 1.0
-                self.contact_schedule[leg, timestep] = 1.0 if leg_phase < self.duty_factor else 0.0
+                # self.contact_schedule[leg, timestep] = 1.0 if leg_phase < self.duty_factor else 0.0
+                self.contact_schedule[leg, timestep] = 1.0 if leg !=0 else 0.0
 
 if __name__ == "__main__":
 

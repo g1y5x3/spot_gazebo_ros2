@@ -32,30 +32,35 @@ class LegController():
         v_ref = swing_traj.foot_vel_des
 
         # stance foot
-        R = robot_state.H_base_w[:3,:3]
+        R_bw = robot_state.H_base_w[:3,:3]
         f = mpc_ctrl.f
 
         for leg_idx in range(4):
-            if gait_schedule.get_leg_state(leg_idx) == "swing":
-                # TODO Need to unify indexing
-                tau = J[leg_idx,:].T @ (
-                    self.Kp @ (p_ref[leg_idx,:] - p[:,leg_idx]) + 
-                    self.Kd @ (v_ref[leg_idx,:] - v[:,leg_idx])
-                )
+            # if gait_schedule.get_leg_state(leg_idx) == "swing":
+            #     # TODO Need to unify indexing
+            #     tau = J[leg_idx,:].T @ (
+            #         self.Kp @ (p_ref[leg_idx,:] - p[:,leg_idx]) + 
+            #         self.Kd @ (v_ref[leg_idx,:] - v[:,leg_idx])
+            #     )
+            #     torque_cmds[3*leg_idx : 3*(leg_idx+1)] = tau
+            #     # torque_cmds[3*(leg_idx+2) : 3*(leg_idx+3)] = tau
+            #     print(f"torque_cmds {torque_cmds}")
+            #     # print(leg_idx)
+            #     # print(f"tau {tau}")
+            # else:
+            if gait_schedule.get_leg_state(leg_idx) == "stance":
+                # print(f)
+                tau = J[leg_idx,:].T @ R_bw @ -f[3*leg_idx:3*(leg_idx+1)]
+                print(tau.shape)
                 torque_cmds[3*leg_idx : 3*(leg_idx+1)] = tau
-                # torque_cmds[3*(leg_idx+2) : 3*(leg_idx+3)] = tau
-                print(f"torque_cmds {torque_cmds}")
-                # print(leg_idx)
-                # print(f"tau {tau}")
-            else:
-                tau = J[leg_idx,:].T @ R @ -f[3*leg_idx:3*(leg_idx+1)]
-                torque_cmds[3*leg_idx : 3*(leg_idx+1)] = tau
+
+        print(torque_cmds)
 
         msg = JointTrajectory()
-        msg.joint_names = self.joint_names
+        msg.joint_names = self.joint_names[3:]
 
         point = JointTrajectoryPoint()
-        point.effort = torque_cmds.tolist()
+        point.effort = torque_cmds[3:].tolist()
         point.time_from_start.sec = int(0)
         point.time_from_start.nanosec = int(0)
 
