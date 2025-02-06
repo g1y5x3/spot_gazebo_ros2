@@ -53,38 +53,3 @@ class GaitScheduler:
                 leg_phase = (future_phase - stance_start) % 1.0
                 # self.contact_schedule[leg, timestep] = 1.0 if leg_phase < self.duty_factor else 0.0
                 self.contact_schedule[leg, timestep] = 1.0 if leg !=0 else 0.0
-
-if __name__ == "__main__":
-
-    total_steps = 20
-    scheduler = GaitScheduler(gait_cycle=0.5)
-        
-    plt.figure(figsize=(12, 6))
-    contact_pattern = scheduler.get_contact_schedule(total_steps)
-    leg_names = ['FL', 'FR', 'RL', 'RR']
-    colors = ['lightgreen', 'darkgreen', 'forestgreen', 'seagreen']
-
-    for leg in range(4):
-        time_points = np.linspace(0, 1, total_steps)
-        
-        # Plot the contact pattern
-        plt.plot(time_points, contact_pattern[leg] * (4-leg) + leg, 
-                drawstyle='steps-post', color=colors[leg], linewidth=2,
-                label=leg_names[leg])
-        
-        for step in range(total_steps-1):
-            if contact_pattern[leg, step] == 1:
-                plt.fill_between(time_points[step:step+2], 
-                               [leg, leg], 
-                               [leg+1, leg+1], 
-                               color=colors[leg], alpha=0.3)
-        
-    plt.title(f'{scheduler.current_gait.capitalize()} Gait Pattern')
-    plt.xlabel('Gait Cycles')
-    plt.ylabel('Leg')
-    plt.yticks(range(4), leg_names)
-    plt.grid(True, alpha=0.3)
-    plt.xlim(0, 1)
-    plt.ylim(-0.2, 4.2)
-    plt.tight_layout()
-    plt.show()
