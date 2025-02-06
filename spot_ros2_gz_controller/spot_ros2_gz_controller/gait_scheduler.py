@@ -36,18 +36,14 @@ class GaitScheduler:
             self.phase_map[leg] = 2 if leg == 0 else 0
         
         self.get_contact_schedule()
-
-        # print(f"0 {self.get_leg_state(0)}, 1 {self.get_leg_state(1)}, 2 {self.get_leg_state(2)}, 3 {self.get_leg_state(3)}")
-        # print(self.contact_schedule)
+        print(f"0 {self.get_leg_state(0)}, 1 {self.get_leg_state(1)}, 2 {self.get_leg_state(2)}, 3 {self.get_leg_state(3)}")
 
     def get_leg_state(self, leg_idx):
         return "stance" if self.phase_map[leg_idx] < self.duty_factor else "swing"
 
     def get_contact_schedule(self):
-    
         for timestep in range(self.horizon):
             future_phase = (self.current_phase + timestep/self.horizon) % 1.0
-
             for leg in range(4):
                 stance_start = self.phase_offset[self.current_gait][leg]
                 leg_phase = (future_phase - stance_start) % 1.0

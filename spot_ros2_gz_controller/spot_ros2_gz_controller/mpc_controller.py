@@ -8,14 +8,6 @@ from .gait_scheduler import GaitScheduler
 
 
 def r_cross(r):
-    """
-    Compute [r]×
-
-    Args:
-        r: 3D position vector
-    Returns:
-        3x3 matrix result
-    """
     return np.array([[    0, -r[2],  r[1]],
                      [ r[2],     0, -r[0]],
                      [-r[1],  r[0],     0]])
