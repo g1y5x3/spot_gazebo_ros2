@@ -76,7 +76,7 @@ class RobotState:
                            [ 0.0014834,  1.31868,     -0.000519074],
                            [-0.0347842, -0.000519074,  1.18915]])
 
-        self.mass = 38.492
+        self.mass = 24.492
 
         # using drake library for kinematics and dynamics calculation
         # https://github.com/RobotLocomotion/drake

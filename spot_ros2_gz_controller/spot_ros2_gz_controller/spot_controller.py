@@ -99,9 +99,7 @@ class SpotController(Node):
         self.robot_state = RobotState(str(Path(spot_model_description) / 'models' / 'spot' / 'model.sdf'))
         self.initialized = False
 
-        self.create_timer(1/1000, self.controller_callback)
-
-        # self.create_timer(1/30, self.high_level_control_callback)
+        self.create_timer(1/20, self.controller_callback)
         # self.create_timer(1/4500.0, self.leg_control_callback)
 
     def clock_callback(self, msg: Clock):
@@ -119,7 +117,6 @@ class SpotController(Node):
             self.clock_msg.clock.nanosec == 0 or
             self.last_jointstate_msg is None or
             self.last_odometry_msg is None):
-
             return
 
         if not self.initialized:
@@ -136,14 +133,13 @@ class SpotController(Node):
             self.initialized = True
             self.get_logger().info('Spot controller initialized.')       
             time.sleep(3.0) # just to have time to inspect all the initialization messages
-
             return
 
         self.robot_state.update(self.last_jointstate_msg, self.last_odometry_msg)
         self.gait_scheduler.update_phase(self.get_clock().now())
         # # TODO take cmd_vel for desired p_dot
-        com_vel = [0.0, 0, 0]
-        self.mpc_controller.udpate_control(com_vel, self.robot_state, self.gait_scheduler)
+        com_vel = [0.0, 0.0, 0.0]
+        self.mpc_controller.update_control(com_vel, self.robot_state, self.gait_scheduler)
         # self.swing_trajectory_generator.update_swingfoot_trajectory(com_vel, self.robot_state, self.gait_scheduler)
 
         self.leg_controller.update(self.trajectory_pub, 

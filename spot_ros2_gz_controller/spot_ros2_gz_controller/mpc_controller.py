@@ -17,10 +17,10 @@ class MPCController:
     def __init__(self, robot_state: RobotState, gait_schedule: GaitScheduler):
         self.gait_cycle = gait_schedule.gait_cycle
         self.horizon = gait_schedule.horizon
-        self.dt = 1/120
+        self.dt = 1/300
         self.fz_max = 666    # (N) maximum normal force
-        self.fz_min = 10     # (N) minimum normal force
-        self.mu = 0.5
+        # self.fz_min = 10     # (N) minimum normal force
+        self.mu = 0.7
 
         # quadratic programming weights
         # r, p, y, x, y, z, wx, wy, wz, vx, vy, vz, g
@@ -47,7 +47,7 @@ class MPCController:
         self.f = np.zeros(12)
 
     # TODO reduce the MPC calculation frequency
-    def udpate_control(self, com_vel_des, robot_state: RobotState, gait_schedule: GaitScheduler):
+    def update_control(self, com_vel_des, robot_state: RobotState, gait_schedule: GaitScheduler):
         com_vel_des_w = np.matmul(robot_state.H_w_base[:3,:3], com_vel_des)
 
         # Obtain the current state
@@ -58,9 +58,9 @@ class MPCController:
 
         # Generate reference trajectory for only xy position and yaw
         # NOTE this part doesn't feel like they blong here
-        # TODO: self.yaw += dt_control ...
-        self.p_x_des += 1/1000 * com_vel_des_w[0]
-        self.p_y_des += 1/1000 * com_vel_des_w[1]
+        # TODO: self.yaw += ...
+        self.p_x_des += 1/20 * com_vel_des_w[0]
+        self.p_y_des += 1/20 * com_vel_des_w[1]
         x_ref = self.generate_reference_trajectory(com_vel_des_w)
         # print(x_ref)
 
@@ -105,7 +105,6 @@ class MPCController:
         for i in range(1, self.horizon):
             x_ref[3+13*i] = x_ref[3+13*(i-1)] + self.dt * com_vel_des[0]
             x_ref[4+13*i] = x_ref[4+13*(i-1)] + self.dt * com_vel_des[1]
-        # use the current robot height which is constant
         x_ref[5::13] = self.p_z_des
         x_ref[9::13] = com_vel_des[0]
         x_ref[10::13] = com_vel_des[1]
