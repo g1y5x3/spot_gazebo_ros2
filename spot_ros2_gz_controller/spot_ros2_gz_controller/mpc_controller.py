@@ -17,7 +17,7 @@ class MPCController:
     def __init__(self, robot_state: RobotState, gait_schedule: GaitScheduler):
         self.gait_cycle = gait_schedule.gait_cycle
         self.horizon = gait_schedule.horizon
-        self.dt = 1/300
+        self.dt = 1/120
         self.fz_max = 666    # (N) maximum normal force
         self.fz_min = 10     # (N) minimum normal force
         self.mu = 0.5
@@ -59,9 +59,10 @@ class MPCController:
         # Generate reference trajectory for only xy position and yaw
         # NOTE this part doesn't feel like they blong here
         # TODO: self.yaw += dt_control ...
-        self.p_x_des += self.dt * com_vel_des_w[0]
-        self.p_y_des += self.dt * com_vel_des_w[1]
+        self.p_x_des += 1/1000 * com_vel_des_w[0]
+        self.p_y_des += 1/1000 * com_vel_des_w[1]
         x_ref = self.generate_reference_trajectory(com_vel_des_w)
+        # print(x_ref)
 
         # MPC solver (NOTE: could happen less frequent)
         start = time.perf_counter()
@@ -93,6 +94,8 @@ class MPCController:
 
     # TODO Add yaw rate
     def generate_reference_trajectory(self, com_vel_des):
+        print(self.p_x_des)
+        print(self.p_y_des)
         x_ref = np.zeros(13 * self.horizon)
         x_ref[0::13] = self.roll_des
         x_ref[1::13] = self.pitch_des
@@ -127,7 +130,6 @@ class MPCController:
         # \hat{I}^-1[r_i]x
         for i in range(4):
             # foot_pos vector needs to be expressed in the world frame
-            foot_pos_w = np.matmul(H_wb, np.append(foot_pos[:,i], 1))[:3]
             Bc[6:9,  3*i:3*i+3] = np.linalg.inv(I_w) @ r_cross(foot_pos[:,i])
             Bc[9:12, 3*i:3*i+3] = np.identity(3) / self.mass
 

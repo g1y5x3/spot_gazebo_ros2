@@ -1731,84 +1731,72 @@
       <topic>model/spot/joint_trajectory</topic>
 
       <joint_name>front_left_hip_x</joint_name>
-      <use_header_start_time>true</use_header_start_time>
       <initial_position>0.0</initial_position>
       <position_p_gain>600</position_p_gain>
       <position_i_gain>0.9</position_i_gain>
       <position_d_gain>20</position_d_gain>
 
       <joint_name>front_left_hip_y</joint_name>
-      <use_header_start_time>true</use_header_start_time>
       <initial_position>0.5</initial_position>
       <position_p_gain>600</position_p_gain>
       <position_i_gain>0.9</position_i_gain>
       <position_d_gain>20</position_d_gain>
 
       <joint_name>front_left_knee</joint_name>
-      <use_header_start_time>true</use_header_start_time>
       <initial_position>-1</initial_position>
       <position_p_gain>600</position_p_gain>
       <position_i_gain>0.9</position_i_gain>
       <position_d_gain>20</position_d_gain>
 
       <joint_name>front_right_hip_x</joint_name>
-      <use_header_start_time>true</use_header_start_time>
       <initial_position>0.0</initial_position>
       <position_p_gain>600</position_p_gain>
       <position_i_gain>0.9</position_i_gain>
       <position_d_gain>20</position_d_gain>
 
       <joint_name>front_right_hip_y</joint_name>
-      <use_header_start_time>true</use_header_start_time>
       <initial_position>0.5</initial_position>
       <position_p_gain>600</position_p_gain>
       <position_i_gain>0.9</position_i_gain>
       <position_d_gain>20</position_d_gain>
 
       <joint_name>front_right_knee</joint_name>
-      <use_header_start_time>true</use_header_start_time>
       <initial_position>-1</initial_position>
       <position_p_gain>600</position_p_gain>
       <position_i_gain>0.9</position_i_gain>
       <position_d_gain>20</position_d_gain>
 
       <joint_name>rear_left_hip_x</joint_name>
-      <use_header_start_time>true</use_header_start_time>
       <initial_position>0.0</initial_position>
       <position_p_gain>600</position_p_gain>
       <position_i_gain>0.9</position_i_gain>
       <position_d_gain>20</position_d_gain>
 
       <joint_name>rear_left_hip_y</joint_name>
-      <use_header_start_time>true</use_header_start_time>
       <initial_position>0.5</initial_position>
       <position_p_gain>600</position_p_gain>
       <position_i_gain>0.9</position_i_gain>
       <position_d_gain>20</position_d_gain>
 
       <joint_name>rear_left_knee</joint_name>
-      <use_header_start_time>true</use_header_start_time>
       <initial_position>-1</initial_position>
       <position_p_gain>600</position_p_gain>
       <position_i_gain>0.9</position_i_gain>
       <position_d_gain>20</position_d_gain>
 
       <joint_name>rear_right_hip_x</joint_name>
-      <use_header_start_time>true</use_header_start_time>
       <initial_position>0.0</initial_position>
       <position_p_gain>600</position_p_gain>
       <position_i_gain>0.9</position_i_gain>
       <position_d_gain>20</position_d_gain>
 
       <joint_name>rear_right_hip_y</joint_name>
-      <use_header_start_time>true</use_header_start_time>
       <initial_position>0.5</initial_position>
       <position_p_gain>600</position_p_gain>
       <position_i_gain>0.9</position_i_gain>
       <position_d_gain>20</position_d_gain>
 
       <joint_name>rear_right_knee</joint_name>
-      <use_header_start_time>true</use_header_start_time>
       <initial_position>-1</initial_position>
       <position_p_gain>600</position_p_gain>
       <position_i_gain>0.9</position_i_gain>
