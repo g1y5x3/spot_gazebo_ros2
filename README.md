@@ -1,17 +1,15 @@
-# spot_ros2_gazebo
+# spot_gazebo
 A ROS 2 Spot simulator using Gazebo for prototyping spot autonomous behaviors.
 
 ![gazebo_rviz_spot](assets/gazebo_rviz_spot.png)
 
 ## Included packages
 
-* `spot_ros2_description` - holds the sdf description of the custom spot model with lidar and camera sensors.
+* `spot_description` - holds the sdf description of the custom spot model with lidar and camera sensors.
 
-* `spot_ros2_gazebo` - holds gazebo specific code and configurations. Including the edgar mine environment.
+* `spot_gazebo` - holds gazebo specific code and configurations. Including the edgar mine environment.
 
-* `spot_ros2_bringup` - holds launch files and high level utilities.
-
-* `spot_ros2_gz_controller` - holds locomotion controller.
+* `spot_bringup` - holds launch files and high level utilities.
 
 ## Install
 
