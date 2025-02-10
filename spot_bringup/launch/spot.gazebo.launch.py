@@ -53,8 +53,6 @@ def generate_launch_description():
         }]
     )
 
-    # TODO: launch a driver node that converts the odometry to /tf frame
-
     # Takes the description and joint angles as inputs and publishes the 3D poses of the robot links
     robot_state_publisher = Node(
         package='robot_state_publisher',

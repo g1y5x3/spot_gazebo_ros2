@@ -1,0 +1,234 @@
+<?xml version="1.0" ?>
+<sdf version="1.8">
+  <world name="edgar_mine_world">
+
+    <plugin
+        filename="ignition-gazebo-physics-system"
+        name="ignition::gazebo::systems::Physics">
+    </plugin>
+    <plugin
+        filename="ignition-gazebo-sensors-system"
+        name="ignition::gazebo::systems::Sensors">
+        <render_engine>ogre2</render_engine>
+    </plugin>
+    <plugin
+        filename="ignition-gazebo-scene-broadcaster-system"
+        name="ignition::gazebo::systems::SceneBroadcaster">
+    </plugin>
+    <!-- Add this plugin to enable GUI interactions -->
+    <plugin
+        filename="ignition-gazebo-user-commands-system"
+        name="ignition::gazebo::systems::UserCommands">
+    </plugin>
+
+    <physics name="1ms" type="ode">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+      <real_time_update_rate>1000</real_time_update_rate>
+    </physics>
+
+    <model name="Edgar_Mine_Virtual_STIX">
+      <pose>-0.40 118 0 1.5707 0 -0.35</pose>
+      <static>true</static>
+      <link name="link">
+        <collision name="starting_area_collision">
+          <geometry>
+            <mesh>
+              <uri>meshes/Edgar_StartingArea.DAE</uri>
+            </mesh>
+          </geometry>
+        </collision>
+        <visual name="starting_area_visual">
+          <geometry>
+            <mesh>
+              <uri>meshes/Edgar_StartingArea.DAE</uri>
+            </mesh>
+          </geometry>
+        </visual>
+
+        <collision name="section_01_collision">
+          <geometry>
+            <mesh>
+              <uri>meshes/Edgar_Section_01.DAE</uri>
+            </mesh>
+          </geometry>
+        </collision>
+        <visual name="section_01_visual">
+          <geometry>
+            <mesh>
+              <uri>meshes/Edgar_Section_01.DAE</uri>
+            </mesh>
+          </geometry>
+        </visual>
+
+        <collision name="section_02_collision">
+          <geometry>
+            <mesh>
+              <uri>meshes/Edgar_Section_02.DAE</uri>
+            </mesh>
+          </geometry>
+        </collision>
+        <visual name="section_02_visual">
+          <geometry>
+            <mesh>
+              <uri>meshes/Edgar_Section_02.DAE</uri>
+            </mesh>
+          </geometry>
+        </visual>
+
+        <collision name="section_03_collision">
+          <geometry>
+            <mesh>
+              <uri>meshes/Edgar_Section_03.DAE</uri>
+            </mesh>
+          </geometry>
+        </collision>
+        <visual name="section_03_visual">
+          <geometry>
+            <mesh>
+              <uri>meshes/Edgar_Section_03.DAE</uri>
+            </mesh>
+          </geometry>
+        </visual>
+
+        <collision name="section_04_collision">
+          <geometry>
+            <mesh>
+              <uri>meshes/Edgar_Section_04.DAE</uri>
+            </mesh>
+          </geometry>
+        </collision>
+        <visual name="section_04_visual">
+          <geometry>
+            <mesh>
+              <uri>meshes/Edgar_Section_04.DAE</uri>
+            </mesh>
+          </geometry>
+        </visual>
+
+        <collision name="section_05_collision">
+          <geometry>
+            <mesh>
+              <uri>meshes/Edgar_Section_05.DAE</uri>
+            </mesh>
+          </geometry>
+        </collision>
+        <visual name="section_05_visual">
+          <geometry>
+            <mesh>
+              <uri>meshes/Edgar_Section_05.DAE</uri>
+            </mesh>
+          </geometry>
+        </visual>
+
+        <collision name="section_06_collision">
+          <geometry>
+            <mesh>
+              <uri>meshes/Edgar_Section_06.DAE</uri>
+            </mesh>
+          </geometry>
+        </collision>
+        <visual name="section_06_visual">
+          <geometry>
+            <mesh>
+              <uri>meshes/Edgar_Section_06.DAE</uri>
+            </mesh>
+          </geometry>
+        </visual>
+
+        <collision name="section_07_collision">
+          <geometry>
+            <mesh>
+              <uri>meshes/Edgar_Section_07.DAE</uri>
+            </mesh>
+          </geometry>
+        </collision>
+        <visual name="section_07_visual">
+          <geometry>
+            <mesh>
+              <uri>meshes/Edgar_Section_07.DAE</uri>
+            </mesh>
+          </geometry>
+        </visual>
+
+        <collision name="section_08_collision">
+          <geometry>
+            <mesh>
+              <uri>meshes/Edgar_Section_08.DAE</uri>
+            </mesh>
+          </geometry>
+        </collision>
+        <visual name="section_08_visual">
+          <geometry>
+            <mesh>
+              <uri>meshes/Edgar_Section_08.DAE</uri>
+            </mesh>
+          </geometry>
+        </visual>
+
+        <collision name="section_09_collision">
+          <geometry>
+            <mesh>
+              <uri>meshes/Edgar_Section_09.DAE</uri>
+            </mesh>
+          </geometry>
+        </collision>
+        <visual name="section_09_visual">
+          <geometry>
+            <mesh>
+              <uri>meshes/Edgar_Section_09.DAE</uri>
+            </mesh>
+          </geometry>
+        </visual>
+
+        <collision name="section_10_collision">
+          <geometry>
+            <mesh>
+              <uri>meshes/Edgar_Section_10.DAE</uri>
+            </mesh>
+          </geometry>
+        </collision>
+        <visual name="section_10_visual">
+          <geometry>
+            <mesh>
+              <uri>meshes/Edgar_Section_10.DAE</uri>
+            </mesh>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+
+    <model name="champ">
+      <pose>0 0 0.3 0 0 1.5707</pose>
+      <include merge="true">
+        <uri>package://champ_description/models/champ</uri>
+      </include>
+
+      <plugin
+        filename="ignition-gazebo-joint-state-publisher-system"
+        name="ignition::gazebo::systems::JointStatePublisher">
+        <topic>model/champ/joint_state</topic>
+      </plugin>
+
+      <plugin
+        filename="ignition-gazebo-odometry-publisher-system"
+        name="ignition::gazebo::systems::OdometryPublisher">
+        <odom_frame>odom_gz</odom_frame>
+        <robot_base_frame>base_link</robot_base_frame>
+        <dimensions>3</dimensions>
+      </plugin>
+
+      <!-- TODO: remove the PosePublisher, and manage the /odom frame from ROS side -->
+      <plugin
+        filename="ignition-gazebo-pose-publisher-system"
+        name="ignition::gazebo::systems::PosePublisher">
+        <publish_link_pose>false</publish_link_pose>
+        <publish_visual_pose>false</publish_visual_pose>
+        <publish_collision_pose>false</publish_collision_pose>
+        <publish_sensor_pose>false</publish_sensor_pose>
+        <publish_model_pose>true</publish_model_pose>
+      </plugin>
+
+    </model>
+  </world>
+</sdf>
