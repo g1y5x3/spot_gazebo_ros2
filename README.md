@@ -9,8 +9,8 @@ A ROS 2 Humble simulation package for the Boston Dynamics Spot robot using Ignit
 - ROS 2/Gazebo bridge configuration for sensor and control interfaces
 
 <div style="display: flex; gap: 10px;">
-    <img src="assets/walking_rviz.gif" height="200">
-    <img src="assets/walking_entrance.gif" height="200">
+    <img src="assets/walking_rviz.gif" height="300">
+    <img src="assets/walking_entrance.gif" height="300">
 </div>
 
 <!-- <img src="assets/gazebo_rviz_spot.png" width="800"> -->
