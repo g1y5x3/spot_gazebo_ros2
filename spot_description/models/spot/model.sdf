@@ -849,12 +849,12 @@
               <kd>100</kd>
             </ode>
           </contact>
-          <!-- <friction>
+          <friction>
             <ode>
               <mu>0.8</mu>
               <mu2>0.8</mu2>
             </ode>
-          </friction> -->
+          </friction>
         </surface>
       </collision>
       <collision name="front_left_lower_leg_collision_1">
@@ -871,12 +871,12 @@
               <kd>100</kd>
             </ode>
           </contact>
-          <!-- <friction>
+          <friction>
             <ode>
               <mu>0.8</mu>
               <mu2>0.8</mu2>
             </ode>
-          </friction> -->
+          </friction>
         </surface>
       </collision>
       <visual name="front_left_lower_leg_visual">
@@ -1070,12 +1070,12 @@
               <kd>100</kd>
             </ode>
           </contact>
-          <!-- <friction>
+          <friction>
             <ode>
               <mu>0.8</mu>
               <mu2>0.8</mu2>
             </ode>
-          </friction> -->
+          </friction>
         </surface>
       </collision>
       <collision name="front_right_lower_leg_collision_1">
@@ -1092,12 +1092,12 @@
               <kd>100</kd>
             </ode>
           </contact>
-          <!-- <friction>
+          <friction>
             <ode>
               <mu>0.8</mu>
               <mu2>0.8</mu2>
             </ode>
-          </friction> -->
+          </friction>
         </surface>
       </collision>
       <visual name="front_right_lower_leg_visual">
@@ -1404,12 +1404,12 @@
               <kd>100</kd>
             </ode>
           </contact>
-          <!-- <friction>
+          <friction>
             <ode>
               <mu>0.8</mu>
               <mu2>0.8</mu2>
             </ode>
-          </friction> -->
+          </friction>
         </surface>
       </collision>
       <collision name="rear_left_lower_leg_collision_1">
@@ -1426,12 +1426,12 @@
               <kd>100</kd>
             </ode>
           </contact>
-          <!-- <friction>
+          <friction>
             <ode>
               <mu>0.8</mu>
               <mu2>0.8</mu2>
             </ode>
-          </friction> -->
+          </friction>
         </surface>
       </collision>
       <visual name="rear_left_lower_leg_visual">
@@ -1624,12 +1624,12 @@
               <kd>100</kd>
             </ode>
           </contact>
-          <!-- <friction>
+          <friction>
             <ode>
               <mu>0.8</mu>
               <mu2>0.8</mu2>
             </ode>
-          </friction> -->
+          </friction>
         </surface>
       </collision>
       <collision name="rear_right_lower_leg_collision_1">
@@ -1646,12 +1646,12 @@
               <kd>100</kd>
             </ode>
           </contact>
-          <!-- <friction>
+          <friction>
             <ode>
               <mu>0.8</mu>
               <mu2>0.8</mu2>
             </ode>
-          </friction> -->
+          </friction>
         </surface>
       </collision>
       <visual name="rear_right_lower_leg_visual">
@@ -1732,62 +1732,62 @@
       <topic>model/spot/joint_trajectory</topic>
 
       <joint_name>front_left_hip_x</joint_name>
-      <position_p_gain>400</position_p_gain>
+      <position_p_gain>500</position_p_gain>
       <position_i_gain>1</position_i_gain>
       <position_d_gain>20</position_d_gain>
 
       <joint_name>front_left_hip_y</joint_name>
-      <position_p_gain>400</position_p_gain>
+      <position_p_gain>500</position_p_gain>
       <position_i_gain>1</position_i_gain>
       <position_d_gain>20</position_d_gain>
 
       <joint_name>front_left_knee</joint_name>
-      <position_p_gain>400</position_p_gain>
+      <position_p_gain>500</position_p_gain>
       <position_i_gain>1</position_i_gain>
       <position_d_gain>20</position_d_gain>
 
       <joint_name>front_right_hip_x</joint_name>
-      <position_p_gain>400</position_p_gain>
+      <position_p_gain>500</position_p_gain>
       <position_i_gain>1</position_i_gain>
       <position_d_gain>20</position_d_gain>
 
       <joint_name>front_right_hip_y</joint_name>
-      <position_p_gain>400</position_p_gain>
+      <position_p_gain>500</position_p_gain>
       <position_i_gain>1</position_i_gain>
       <position_d_gain>20</position_d_gain>
 
       <joint_name>front_right_knee</joint_name>
-      <position_p_gain>400</position_p_gain>
+      <position_p_gain>500</position_p_gain>
       <position_i_gain>1</position_i_gain>
       <position_d_gain>20</position_d_gain>
 
       <joint_name>rear_left_hip_x</joint_name>
-      <position_p_gain>400</position_p_gain>
+      <position_p_gain>500</position_p_gain>
       <position_i_gain>1</position_i_gain>
       <position_d_gain>20</position_d_gain>
 
       <joint_name>rear_left_hip_y</joint_name>
-      <position_p_gain>400</position_p_gain>
+      <position_p_gain>500</position_p_gain>
       <position_i_gain>1</position_i_gain>
       <position_d_gain>20</position_d_gain>
 
       <joint_name>rear_left_knee</joint_name>
-      <position_p_gain>400</position_p_gain>
+      <position_p_gain>500</position_p_gain>
       <position_i_gain>1</position_i_gain>
       <position_d_gain>20</position_d_gain>
 
       <joint_name>rear_right_hip_x</joint_name>
-      <position_p_gain>400</position_p_gain>
+      <position_p_gain>500</position_p_gain>
       <position_i_gain>1</position_i_gain>
       <position_d_gain>20</position_d_gain>
 
       <joint_name>rear_right_hip_y</joint_name>
-      <position_p_gain>400</position_p_gain>
+      <position_p_gain>500</position_p_gain>
       <position_i_gain>1</position_i_gain>
       <position_d_gain>20</position_d_gain>
 
       <joint_name>rear_right_knee</joint_name>
-      <position_p_gain>400</position_p_gain>
+      <position_p_gain>500</position_p_gain>
       <position_i_gain>1</position_i_gain>
       <position_d_gain>20</position_d_gain>
     </plugin>

@@ -23,6 +23,10 @@ A ROS 2 Humble simulation package for the Boston Dynamics Spot robot using Ignit
 * `spot_bringup` - Launch files and configuration to start Spot simulation with all required nodes
 * `spot_description` - URDF and SDF robot description files defining Spot's model for ROS 2 and Gazebo
 * `spot_gazebo` - Ignition Gazebo simulation specific files including worlds and simulation plugins
+    * Edgar Mine
+
+        <img src="assets/spot_mine.png" width="400">
+
 
 ## Install
 
