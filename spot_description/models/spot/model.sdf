@@ -849,12 +849,12 @@
               <kd>100</kd>
             </ode>
           </contact>
-          <friction>
+          <!-- <friction>
             <ode>
               <mu>0.8</mu>
               <mu2>0.8</mu2>
             </ode>
-          </friction>
+          </friction> -->
         </surface>
       </collision>
       <collision name="front_left_lower_leg_collision_1">
@@ -871,12 +871,12 @@
               <kd>100</kd>
             </ode>
           </contact>
-          <friction>
+          <!-- <friction>
             <ode>
               <mu>0.8</mu>
               <mu2>0.8</mu2>
             </ode>
-          </friction>
+          </friction> -->
         </surface>
       </collision>
       <visual name="front_left_lower_leg_visual">
@@ -928,6 +928,7 @@
       </inertial>
     </link>
     <joint name="front_left_foot" type="fixed">
+  
       <child>front_left_ee</child>
       <parent>front_left_lower_leg</parent>
       <axis>
@@ -1069,12 +1070,12 @@
               <kd>100</kd>
             </ode>
           </contact>
-          <friction>
+          <!-- <friction>
             <ode>
               <mu>0.8</mu>
               <mu2>0.8</mu2>
             </ode>
-          </friction>
+          </friction> -->
         </surface>
       </collision>
       <collision name="front_right_lower_leg_collision_1">
@@ -1091,12 +1092,12 @@
               <kd>100</kd>
             </ode>
           </contact>
-          <friction>
+          <!-- <friction>
             <ode>
               <mu>0.8</mu>
               <mu2>0.8</mu2>
             </ode>
-          </friction>
+          </friction> -->
         </surface>
       </collision>
       <visual name="front_right_lower_leg_visual">
@@ -1403,12 +1404,12 @@
               <kd>100</kd>
             </ode>
           </contact>
-          <friction>
+          <!-- <friction>
             <ode>
               <mu>0.8</mu>
               <mu2>0.8</mu2>
             </ode>
-          </friction>
+          </friction> -->
         </surface>
       </collision>
       <collision name="rear_left_lower_leg_collision_1">
@@ -1425,12 +1426,12 @@
               <kd>100</kd>
             </ode>
           </contact>
-          <friction>
+          <!-- <friction>
             <ode>
               <mu>0.8</mu>
               <mu2>0.8</mu2>
             </ode>
-          </friction>
+          </friction> -->
         </surface>
       </collision>
       <visual name="rear_left_lower_leg_visual">
@@ -1623,12 +1624,12 @@
               <kd>100</kd>
             </ode>
           </contact>
-          <friction>
+          <!-- <friction>
             <ode>
               <mu>0.8</mu>
               <mu2>0.8</mu2>
             </ode>
-          </friction>
+          </friction> -->
         </surface>
       </collision>
       <collision name="rear_right_lower_leg_collision_1">
@@ -1645,12 +1646,12 @@
               <kd>100</kd>
             </ode>
           </contact>
-          <friction>
+          <!-- <friction>
             <ode>
               <mu>0.8</mu>
               <mu2>0.8</mu2>
             </ode>
-          </friction>
+          </friction> -->
         </surface>
       </collision>
       <visual name="rear_right_lower_leg_visual">

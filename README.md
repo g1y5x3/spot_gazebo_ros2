@@ -1,34 +1,40 @@
 # spot_gazebo
-A ROS 2 Spot simulator using Gazebo for prototyping spot autonomous behaviors.
 
-![gazebo_rviz_spot](assets/gazebo_rviz_spot.png)
+A ROS 2 Humble simulation package for the Boston Dynamics Spot robot using Ignition/Gazebo Sim (the successor to Gazebo Classic). This package provides:
+
+- Full URDF/SDF robot description for simulation
+- Integration with CHAMP quadruped controller
+- Launch files for easy simulation setup
+- Gazebo world configurations
+- ROS 2/Gazebo bridge configuration for sensor and control interfaces
+
+<div style="display: flex; gap: 10px;">
+    <img src="assets/walking_rviz.gif" height="400">
+    <img src="assets/walking_entrance.gif" height="400">
+</div>
+
+<!-- <img src="assets/gazebo_rviz_spot.png" width="800"> -->
 
 ## Included packages
 
-* `spot_description` - holds the sdf description of the custom spot model with lidar and camera sensors.
-
-* `spot_gazebo` - holds gazebo specific code and configurations. Including the edgar mine environment.
-
-* `spot_bringup` - holds launch files and high level utilities.
+* `champ` - Core CHAMP quadruped controller integration package adapted for ROS 2 Humble and Spot
+* `champ_base` - Base implementation of quadruped controller with gait generators and kinematics
+* `champ_msgs` - Custom ROS 2 message definitions for quadruped control and state information
+* `spot_bringup` - Launch files and configuration to start Spot simulation with all required nodes
+* `spot_description` - URDF and SDF robot description files defining Spot's model for ROS 2 and Gazebo
+* `spot_gazebo` - Ignition Gazebo simulation specific files including worlds and simulation plugins
 
 ## Install
 
 ### Requirements
 
-1. Currently all packages are only tested with ROS 2 Humble + Gazebo Fortress
-
-2. Install necessary tools
-
-    ```bash
-    sudo apt install python3-vcstool python3-colcon-common-extensions git wget
-    ```
-
-3. [pinocchio](https://stack-of-tasks.github.io/pinocchio/download.html)
+- Ubuntu 22.04
+- [ROS 2 humble](https://docs.ros.org/en/humble/Installation.html) 
+- [Gazebo Fortress](https://gazebosim.org/docs/fortress/install/)
 
 ## Usage
 
 1. Install dependencies
-
     ```bash
     cd ~/ros2_ws
     source /opt/ros/humble/setup.bash
@@ -36,24 +42,19 @@ A ROS 2 Spot simulator using Gazebo for prototyping spot autonomous behaviors.
     rosdep update
     rosdep install --from-paths src --ignore-src -r -i -y --rosdistro humble
     ```
-
 2. Build the project
-
     ```bash
     colcon build --cmake-args -DBUILD_TESTING=ON
     ```
-
 3. Source the workspace
-
     ```bash
     source ~/ros2_ws/install/setup.sh
     ```
-
 4. Launch the simulation
-
     ```bash
-    ros2 launch spot2_bringup spot.launch.py
+    ros2 launch spot2_bringup spot.gazebo.launch.py
     ```
 ## Acknowledgement
-* [template documentation](https://gazebosim.org/docs/latest/ros_gz_project_template_guide).
-* [pydrake] make sure you have the correct version `pip >= 20.3`. You can upgrade through `pip install --upgrade pip`.
+* [champ](https://github.com/chvmp/champ/tree/ros2) ros2 branch.
+* [spot_config](https://github.com/chvmp/robots/tree/master/configs/spot_config) with some modification.
+* [spot_description](https://github.com/clearpathrobotics/spot_ros) for URDF.
