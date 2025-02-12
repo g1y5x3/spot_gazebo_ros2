@@ -89,7 +89,7 @@ QuadrupedController::QuadrupedController():
     gait_config_.knee_orientation = knee_orientation.c_str();
     
     base_.setGaitConfig(gait_config_);
-    champ::URDF::loadFromString(base_, this->get_node_parameters_interface(), urdf);
+    champ::URDF::loadFromFile(base_, this->get_node_parameters_interface(), urdf);
     joint_names_ = champ::URDF::getJointNames(this->get_node_parameters_interface());
     std::chrono::milliseconds period(static_cast<int>(1000/loop_rate));
 
