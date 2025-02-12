@@ -1,9 +1,4 @@
 ---
-- ros_topic_name: "/spot/joint_trajectory"
-  gz_topic_name: "/model/spot/joint_trajectory"
-  ros_type_name: "trajectory_msgs/msg/JointTrajectory"
-  gz_type_name: "ignition.msgs.JointTrajectory"
-  direction: ROS_TO_GZ
 - ros_topic_name: "/clock"
   gz_topic_name: "/clock"
   ros_type_name: "rosgraph_msgs/msg/Clock"
@@ -14,6 +9,11 @@
   ros_type_name: "sensor_msgs/msg/JointState"
   gz_type_name: "ignition.msgs.Model"
   direction: GZ_TO_ROS
+- ros_topic_name: "/spot/joint_trajectory"
+  gz_topic_name: "/model/spot/joint_trajectory"
+  ros_type_name: "trajectory_msgs/msg/JointTrajectory"
+  gz_type_name: "ignition.msgs.JointTrajectory"
+  direction: ROS_TO_GZ
 - ros_topic_name: "/spot/odometry"
   gz_topic_name: "/model/spot/odometry"
   ros_type_name: "nav_msgs/msg/Odometry"

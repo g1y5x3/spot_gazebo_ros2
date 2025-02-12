@@ -15,7 +15,7 @@
         filename="ignition-gazebo-scene-broadcaster-system"
         name="ignition::gazebo::systems::SceneBroadcaster">
     </plugin>
-    <!-- Add this plugin to enable GUI interactions -->
+
     <plugin
         filename="ignition-gazebo-user-commands-system"
         name="ignition::gazebo::systems::UserCommands">
@@ -218,7 +218,6 @@
         <dimensions>3</dimensions>
       </plugin>
 
-      <!-- TODO: remove the PosePublisher, and manage the /odom frame from ROS side -->
       <plugin
         filename="ignition-gazebo-pose-publisher-system"
         name="ignition::gazebo::systems::PosePublisher">

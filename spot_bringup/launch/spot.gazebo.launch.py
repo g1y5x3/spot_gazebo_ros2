@@ -8,32 +8,22 @@ from launch.actions import IncludeLaunchDescription
 from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
+from launch_ros.parameter_descriptions import ParameterFile
 
 from launch_ros.actions import Node
 
 
 def generate_launch_description():
-    # Configure ROS nodes for launch
-
-    # Setup project paths
-    pkg_project_bringup = get_package_share_directory('spot_bringup')
-    pkg_project_gazebo = get_package_share_directory('spot_gazebo')
-    pkg_project_description = get_package_share_directory('spot_description')
-    pkg_ros_gz_sim = get_package_share_directory('ros_gz_sim')
-
-    # Load the SDF file from "description" package
-    sdf_file = os.path.join(pkg_project_description, 'models', 'spot', 'model.sdf')
-    with open(sdf_file, 'r') as infp: 
-        robot_desc = infp.read()
-
     # Setup to launch the simulator and Gazebo world
+    pkg_ros_gz_sim = get_package_share_directory('ros_gz_sim')
+    pkg_spot_gazebo = get_package_share_directory('spot_gazebo')
     gz_sim = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(pkg_ros_gz_sim, 'launch', 'gz_sim.launch.py')),
             launch_arguments={
                 'gz_args': [
                     PathJoinSubstitution([
-                        pkg_project_gazebo, 
+                        pkg_spot_gazebo, 
                         'worlds',
                         'edgar_mine_world.sdf'
                     ]),
@@ -43,17 +33,21 @@ def generate_launch_description():
     )
 
     # Bridge ROS topics and Gazebo messages for establishing communication
+    pkg_spot_bringup = get_package_share_directory('spot_bringup')
     bridge = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
         output='screen',
         parameters=[{
-            'config_file': os.path.join(pkg_project_bringup, 'config', 'spot_bridge.yaml'),
+            'config_file': os.path.join(pkg_spot_bringup, 'config', 'spot_bridge.yaml'),
             'qos_overrides./tf_static.publisher.durability': 'transient_local',
         }]
     )
 
     # Takes the description and joint angles as inputs and publishes the 3D poses of the robot links
+    pkg_spot_description = get_package_share_directory('spot_description')
+    sdf_file = os.path.join(pkg_spot_description, 'models', 'spot', 'model.sdf')
+    with open(sdf_file, 'r') as infp: robot_desc = infp.read()
     robot_state_publisher = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
@@ -62,14 +56,47 @@ def generate_launch_description():
         parameters=[
             {'use_sim_time': True},
             {'robot_description': robot_desc},
+            {"publish_frequency": 200.0},
         ]
+    )
+
+    # Controller
+    config_path = get_package_share_directory("champ_config")
+    urdf_file = os.path.join(pkg_spot_description, 'models', 'spot', 'model.urdf')
+
+    links_config = PathJoinSubstitution([config_path, 'config', 'links', 'links.yaml'])
+    links_param = ParameterFile(param_file=links_config, allow_substs=True)
+
+    joints_config = PathJoinSubstitution([config_path, 'config', 'joints', 'joints.yaml'])
+    joints_param = ParameterFile(param_file=joints_config, allow_substs=True) 
+
+    gait_config = PathJoinSubstitution([config_path, 'config', 'gait', 'gait.yaml'])
+    gait_param = ParameterFile(param_file=gait_config, allow_substs=True) 
+
+    quadruped_controller_node = Node(
+        package="champ_base",
+        executable="quadruped_controller_node",
+        output="screen",
+        parameters=[
+            {"use_sim_time": True},
+            {"gazebo": True},
+            {"publish_joint_states": False},
+            {"publish_foot_contacts": False},
+            {"publish_joint_control": True},
+            {"joint_controller_topic": "/spot/joint_trajectory"},
+            {"urdf": urdf_file},
+            links_param,
+            joints_param,
+            gait_param
+        ],
+        remappings=[("/cmd_vel/smooth", "/cmd_vel")],
     )
 
     # Visualize in RViz
     rviz = Node(
        package='rviz2',
        executable='rviz2',
-       arguments=['-d', os.path.join(pkg_project_bringup, 'config', 'spot.rviz')],
+       arguments=['-d', os.path.join(pkg_spot_bringup, 'config', 'spot.rviz')],
        condition=IfCondition(LaunchConfiguration('rviz'))
     )
 
@@ -78,6 +105,6 @@ def generate_launch_description():
         gz_sim,
         bridge,
         robot_state_publisher,
-        controller,
+        quadruped_controller_node,
         rviz
     ])
