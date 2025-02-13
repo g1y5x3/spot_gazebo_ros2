@@ -80,6 +80,72 @@
         </inertia>
       </inertial>
     </link>
+
+    <link name="lidar_link">
+      <pose>0.223 0 0.07585 0 0 0</pose>
+      <!-- <inertial>
+        <pose>0 0 0.03585 0 0 0</pose>
+        <mass>0.83</mass>
+        <inertia>
+          <ixx>0.0009080594249999999</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.0009080594249999999</iyy>
+          <iyz>0</iyz>
+          <izz>0.0011049624</izz>
+        </inertia>
+      </inertial> -->
+      <collision name="collision">
+        <pose>0 0 0.03585 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.0516</radius>
+            <length>0.0717</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>meshes/lidar_3d_v1.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <sensor name='gpu_lidar' type='gpu_lidar'>
+      <pose>0 0 0 0 0 0</pose>
+        <topic>lidar</topic>
+        <update_rate>10</update_rate>
+        <lidar>
+          <scan>
+            <horizontal>
+              <samples>640</samples>
+              <resolution>1</resolution>
+              <min_angle>-1.396263</min_angle>
+              <max_angle>1.396263</max_angle>
+            </horizontal>
+            <vertical>
+              <samples>1</samples>
+              <resolution>1</resolution>
+              <min_angle>0.0</min_angle>
+              <max_angle>0.0</max_angle>
+            </vertical>
+          </scan>
+          <range>
+            <min>0.08</min>
+            <max>10.0</max>
+            <resolution>0.01</resolution>
+          </range>
+        </lidar>
+        <alwaysOn>1</alwaysOn>
+        <visualize>true</visualize>
+      </sensor>
+    </link>
+
+    <joint name='lidar_sensor_joint' type='fixed'>
+      <parent>front_rail</parent>
+      <child>lidar_link</child>
+    </joint>
+
     <joint name="front_rail_joint" type="fixed">
       <child>front_rail</child>
       <parent>body</parent>
