@@ -14,6 +14,19 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
+    world_file = LaunchConfiguration('world_file', default='edgar_mine.sdf')
+    world_file_arg = DeclareLaunchArgument(
+        'world_file',
+        default_value='edgar_mine.sdf',
+        description='Name of the world file to load'
+    )
+
+    rviz_arg = DeclareLaunchArgument(
+        'rviz',
+        default_value='true', 
+        description='Open RViz.'
+    )
+
     # Setup to launch the simulator and Gazebo world
     pkg_ros_gz_sim = get_package_share_directory('ros_gz_sim')
     pkg_spot_gazebo = get_package_share_directory('spot_gazebo')
@@ -25,7 +38,7 @@ def generate_launch_description():
                     PathJoinSubstitution([
                         pkg_spot_gazebo, 
                         'worlds',
-                        'edgar_mine_world.sdf'
+                        world_file
                     ]),
                     # ' -v 4'   # show debug messages for gazebo
                 ],
@@ -101,7 +114,8 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
-        DeclareLaunchArgument('rviz', default_value='true', description='Open RViz.'),
+        world_file_arg,
+        rviz_arg,
         gz_sim,
         bridge,
         robot_state_publisher,

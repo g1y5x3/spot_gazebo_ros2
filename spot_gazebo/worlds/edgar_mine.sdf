@@ -223,7 +223,7 @@
     </model>
 
     <model name="spot">
-      <pose>1 10 1.2 0 0 1.5707</pose>
+      <pose>1 10 1.15 0 0 1.5707</pose>
       <include merge="true">
         <uri>package://spot_description/models/spot</uri>
       </include>
