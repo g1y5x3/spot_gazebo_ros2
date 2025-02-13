@@ -75,8 +75,6 @@ def generate_launch_description():
 
     # Controller
     config_path = get_package_share_directory("champ_config")
-    urdf_file = os.path.join(pkg_spot_description, 'models', 'spot', 'model.urdf')
-
     links_config = PathJoinSubstitution([config_path, 'config', 'links', 'links.yaml'])
     links_param = ParameterFile(param_file=links_config, allow_substs=True)
 
@@ -85,6 +83,8 @@ def generate_launch_description():
 
     gait_config = PathJoinSubstitution([config_path, 'config', 'gait', 'gait.yaml'])
     gait_param = ParameterFile(param_file=gait_config, allow_substs=True) 
+
+    urdf_file = os.path.join(pkg_spot_description, 'models', 'spot', 'model.urdf')
 
     quadruped_controller_node = Node(
         package="champ_base",
