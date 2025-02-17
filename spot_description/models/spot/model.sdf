@@ -96,6 +96,7 @@
         </inertia>
       </inertial> -->
       <collision name="collision">
+        <pose>0 0 0.03585 0 0 0</pose>
         <geometry>
           <cylinder>
             <radius>0.0516</radius>
