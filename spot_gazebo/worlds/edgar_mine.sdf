@@ -277,8 +277,32 @@
       </link>
     </model>
 
+    <include>
+      <pose>1.51 15.53 0.39 0 0 -0.07</pose>
+      <name>rescue_randy_1</name>
+      <uri>https://fuel.ignitionrobotics.org/1.0/OpenRobotics/models/Rescue Randy</uri>
+    </include>
+
+    <include>
+      <pose>30.36 13.79 0.92 0 0 -1.55</pose>
+      <name>rescue_randy_2</name>
+      <uri>https://fuel.ignitionrobotics.org/1.0/OpenRobotics/models/Rescue Randy</uri>
+    </include>
+
+    <include>
+      <pose>22.34 12.88 0.86 -0.16 0 -2.95</pose>
+      <name>rescue_randy_sitting_1</name>
+      <uri>https://fuel.ignitionrobotics.org/1.0/OpenRobotics/models/Rescue Randy Sitting</uri>
+    </include>
+
+    <include>
+      <pose>28.25 6.32 0.64 -0.15 0.06 -2.55</pose>
+      <name>rescue_randy_sitting_2</name>
+      <uri>https://fuel.ignitionrobotics.org/1.0/OpenRobotics/models/Rescue Randy Sitting</uri>
+    </include>
+
     <model name="spot">
-      <pose>1 10 1.15 0 0 1.5707</pose>
+      <pose>0.94 10.07 0.95 -0.07 -0.03 1.07</pose>
       <include merge="true">
         <uri>package://spot_description/models/spot</uri>
       </include>
