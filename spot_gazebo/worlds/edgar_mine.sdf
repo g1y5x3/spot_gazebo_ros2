@@ -278,7 +278,7 @@
     </model>
 
     <include>
-      <pose>1.51 15.53 0.39 0 0 -0.07</pose>
+      <pose>3.40 15.40 0.69 0 0 -0.07</pose>
       <name>rescue_randy_1</name>
       <uri>https://fuel.ignitionrobotics.org/1.0/OpenRobotics/models/Rescue Randy</uri>
     </include>
@@ -302,7 +302,7 @@
     </include>
 
     <model name="spot">
-      <pose>0.94 10.07 0.95 -0.07 -0.03 1.07</pose>
+      <pose>0.87 9.99 0.95 -0.05 -0.05 0.71</pose>
       <include merge="true">
         <uri>package://spot_description/models/spot</uri>
       </include>
