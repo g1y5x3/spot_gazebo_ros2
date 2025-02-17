@@ -23,7 +23,7 @@ A ROS 2 Humble simulation package for the Boston Dynamics Spot robot using Ignit
 * `champ_config` - Configuration package containing robot-specific parameters and settings for the CHAMP quadruped controller
 * `champ_msgs` - Custom ROS 2 message definitions for quadruped control and state information
 * `spot_bringup` - Launch files and configuration to start Spot simulation with all required nodes
-* `spot_description` - URDF and SDF robot description files defining Spot's model for ROS 2 and Gazebo
+* `spot_description` - URDF and SDF robot description files defining Spot's model for ROS 2 and Gazebo (Note: cameras on the body are disabled to save computations)
 * `spot_gazebo` - Ignition Gazebo simulation specific files including worlds and simulation plugins
     * Edgar Mine
 

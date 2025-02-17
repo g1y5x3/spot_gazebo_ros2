@@ -7,8 +7,9 @@ Panels:
         - /Global Options1
         - /Status1
         - /TF1
+        - /TF1/Frames1
       Splitter Ratio: 0.5
-    Tree Height: 720
+    Tree Height: 714
   - Class: rviz_common/Selection
     Name: Selection
   - Class: rviz_common/Tool Properties
@@ -80,26 +81,11 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        camera_back:
+        camera_base_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        camera_frontleft:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        camera_frontright:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        camera_left:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        camera_right:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
+          Value: true
         front_left_ee:
           Alpha: 1
           Show Axes: false
@@ -146,6 +132,15 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+        lidar_base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        lidar_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         rear_left_ee:
           Alpha: 1
           Show Axes: false
@@ -184,6 +179,11 @@ Visualization Manager:
           Show Trail: false
           Value: true
         rear_right_upper_leg:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        thermal_camera_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -207,15 +207,7 @@ Visualization Manager:
           Value: false
         body:
           Value: false
-        camera_back:
-          Value: false
-        camera_frontleft:
-          Value: false
-        camera_frontright:
-          Value: false
-        camera_left:
-          Value: false
-        camera_right:
+        camera_base_link:
           Value: false
         front_left_ee:
           Value: false
@@ -237,6 +229,10 @@ Visualization Manager:
           Value: false
         imu:
           Value: false
+        lidar_base_link:
+          Value: false
+        lidar_link:
+          Value: true
         odom_gz:
           Value: true
         rear_left_ee:
@@ -257,6 +253,8 @@ Visualization Manager:
           Value: false
         rear_right_upper_leg:
           Value: false
+        thermal_camera_link:
+          Value: true
       Marker Scale: 1
       Name: TF
       Show Arrows: true
@@ -269,19 +267,15 @@ Visualization Manager:
               {}
             body:
               front_rail:
-                {}
+                lidar_base_link:
+                  {}
+                lidar_link:
+                  {}
               rear_rail:
-                {}
-            camera_back:
-              {}
-            camera_frontleft:
-              {}
-            camera_frontright:
-              {}
-            camera_left:
-              {}
-            camera_right:
-              {}
+                camera_base_link:
+                  {}
+                thermal_camera_link:
+                  {}
             front_left_hip:
               front_left_upper_leg:
                 front_left_lower_leg:
@@ -352,25 +346,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 3.7083284854888916
+      Distance: 3.302051544189453
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -0.05793119966983795
-        Y: 0.03672133386135101
-        Z: 0.10802693665027618
+        X: -0.08384384959936142
+        Y: -0.18433895707130432
+        Z: 0.3367992043495178
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.39539843797683716
+      Pitch: 0.4003985524177551
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 2.315392255783081
+      Yaw: 2.4853997230529785
     Saved: ~
 Window Geometry:
   Displays:
@@ -378,7 +372,7 @@ Window Geometry:
   Height: 1011
   Hide Left Dock: false
   Hide Right Dock: false
-  QMainWindow State: 000000ff00000000fd00000004000000000000015600000359fc0200000008fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003b00000359000000c700fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261000000010000010f00000359fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073010000003b00000359000000a000fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b20000000000000000000000020000078000000103fc0100000003fb0000000a0049006d00610067006500000000000000039b0000000000000000fb0000000a0049006d0061006700650000000000000007800000000000000000fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000007800000003efc0100000002fb0000000800540069006d00650100000000000007800000025300fffffffb0000000800540069006d006501000000000000045000000000000000000000050f0000035900000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd00000004000000000000015600000355fc0200000008fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003d00000355000000c900fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261000000010000010f00000355fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073010000003d00000355000000a400fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b20000000000000000000000020000078000000103fc0100000003fb0000000a0049006d00610067006500000000000000039b0000000000000000fb0000000a0049006d0061006700650000000000000007800000000000000000fb0000000a00560069006500770073030000004e00000080000002e100000197000000030000077e0000003efc0100000002fb0000000800540069006d006501000000000000077e0000026600fffffffb0000000800540069006d006501000000000000045000000000000000000000050d0000035500000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:
@@ -387,6 +381,6 @@ Window Geometry:
     collapsed: false
   Views:
     collapsed: false
-  Width: 1920
+  Width: 1918
   X: 1920
   Y: 32
