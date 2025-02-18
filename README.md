@@ -15,7 +15,7 @@ A ROS 2 Humble simulation package for the Boston Dynamics Spot robot using Ignit
 </div>
 
 ## Note
-1. All mesh and material files are referenced using Fuel URLs from fuel.gazebosim.org for convenience. However, the actual files are also included in this repository as a fallback in case of internet connectivity issues. 
+1. All mesh and material files are referenced using Fuel URLs from fuel.gazebosim.org for convenience.
 
 ## Included packages
 
