@@ -81,6 +81,7 @@
       </inertial>
     </link>
 
+    <!-- Re-enabled once controller can factor mass/inertia -->
     <link name="lidar_base_link">
       <pose>0.223 0 0.0805 0 0 0</pose>
       <!-- <inertial>
@@ -637,7 +638,8 @@
             <near>0.1</near>
             <far>4</far>
           </clip>
-          <noise>
+          <noise><
+ 
             <type>gaussian</type>
             <mean>0</mean>
             <stddev>0.007</stddev>
@@ -1890,6 +1892,20 @@
     </joint>
 
     <plugin
+      filename="ignition-gazebo-joint-state-publisher-system"
+      name="ignition::gazebo::systems::JointStatePublisher">
+      <topic>model/spot/joint_state</topic>
+    </plugin>
+
+    <plugin
+      filename="ignition-gazebo-odometry-publisher-system"
+      name="ignition::gazebo::systems::OdometryPublisher">
+      <odom_frame>odom_gz</odom_frame>
+      <robot_base_frame>base_link</robot_base_frame>
+      <dimensions>3</dimensions>
+    </plugin>
+
+    <plugin
       filename="ignition-gazebo-joint-trajectory-controller-system"
       name="ignition::gazebo::systems::JointTrajectoryController">
       <topic>model/spot/joint_trajectory</topic>
@@ -1954,5 +1970,6 @@
       <position_i_gain>1</position_i_gain>
       <position_d_gain>20</position_d_gain>
     </plugin>
+
   </model>
 </sdf>
