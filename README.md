@@ -10,8 +10,8 @@ A ROS 2 Humble simulation package for the Boston Dynamics Spot robot using Ignit
 
 <div style="display: flex; gap: 10px;">
     <img src="assets/walking_rviz.gif" height="200">
-    <img src="assets/walking_entrance.gif" height="200">
-    <img src="assets/nav_mine.gif" height="200">
+    <img src="assets/simple_tunnel_nav.gif" height="200">
+    <img src="assets/edgar_mine_nav.gif" height="200">
 </div>
 
 ## Note
