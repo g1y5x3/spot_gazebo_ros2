@@ -36,7 +36,7 @@
         <collision name="starting_area_collision">
           <geometry>
             <mesh>
-              <uri>meshes/Edgar_StartingArea.DAE</uri>
+              <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Edgar Mine Virtual STIX/tip/files/meshes/Edgar_StartingArea.DAE</uri>
               <scale>2 2 2</scale>
             </mesh>
           </geometry>
@@ -44,7 +44,7 @@
         <visual name="starting_area_visual">
           <geometry>
             <mesh>
-              <uri>meshes/Edgar_StartingArea.DAE</uri>
+              <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Edgar Mine Virtual STIX/tip/files/meshes/Edgar_StartingArea.DAE</uri>
               <scale>2 2 2</scale>
             </mesh>
           </geometry>
@@ -58,7 +58,7 @@
         <collision name="section_01_collision">
           <geometry>
             <mesh>
-              <uri>meshes/Edgar_Section_01.DAE</uri>
+              <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Edgar Mine Virtual STIX/tip/files/meshes/Edgar_Section_01.DAE</uri>
               <scale>2 2 2</scale>
             </mesh>
           </geometry>
@@ -66,7 +66,7 @@
         <visual name="section_01_visual">
           <geometry>
             <mesh>
-              <uri>meshes/Edgar_Section_01.DAE</uri>
+              <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Edgar Mine Virtual STIX/tip/files/meshes/Edgar_Section_01.DAE</uri>
               <scale>2 2 2</scale>
             </mesh>
           </geometry>
@@ -80,7 +80,7 @@
         <collision name="section_02_collision">
           <geometry>
             <mesh>
-              <uri>meshes/Edgar_Section_02.DAE</uri>
+              <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Edgar Mine Virtual STIX/tip/files/meshes/Edgar_Section_02.DAE</uri>
               <scale>2 2 2</scale>
             </mesh>
           </geometry>
@@ -88,7 +88,7 @@
         <visual name="section_02_visual">
           <geometry>
             <mesh>
-              <uri>meshes/Edgar_Section_02.DAE</uri>
+              <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Edgar Mine Virtual STIX/tip/files/meshes/Edgar_Section_02.DAE</uri>
               <scale>2 2 2</scale>
             </mesh>
           </geometry>
@@ -102,7 +102,7 @@
         <collision name="section_03_collision">
           <geometry>
             <mesh>
-              <uri>meshes/Edgar_Section_03.DAE</uri>
+              <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Edgar Mine Virtual STIX/tip/files/meshes/Edgar_Section_03.DAE</uri>
               <scale>2 2 2</scale>
             </mesh>
           </geometry>
@@ -110,7 +110,7 @@
         <visual name="section_03_visual">
           <geometry>
             <mesh>
-              <uri>meshes/Edgar_Section_03.DAE</uri>
+              <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Edgar Mine Virtual STIX/tip/files/meshes/Edgar_Section_03.DAE</uri>
               <scale>2 2 2</scale>
             </mesh>
           </geometry>
@@ -124,7 +124,7 @@
         <collision name="section_04_collision">
           <geometry>
             <mesh>
-              <uri>meshes/Edgar_Section_04.DAE</uri>
+              <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Edgar Mine Virtual STIX/tip/files/meshes/Edgar_Section_04.DAE</uri>
               <scale>2 2 2</scale>
             </mesh>
           </geometry>
@@ -132,7 +132,7 @@
         <visual name="section_04_visual">
           <geometry>
             <mesh>
-              <uri>meshes/Edgar_Section_04.DAE</uri>
+              <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Edgar Mine Virtual STIX/tip/files/meshes/Edgar_Section_04.DAE</uri>
               <scale>2 2 2</scale>
             </mesh>
           </geometry>
@@ -146,7 +146,7 @@
         <collision name="section_05_collision">
           <geometry>
             <mesh>
-              <uri>meshes/Edgar_Section_05.DAE</uri>
+              <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Edgar Mine Virtual STIX/tip/files/meshes/Edgar_Section_05.DAE</uri>
               <scale>2 2 2</scale>
             </mesh>
           </geometry>
@@ -154,7 +154,7 @@
         <visual name="section_05_visual">
           <geometry>
             <mesh>
-              <uri>meshes/Edgar_Section_05.DAE</uri>
+              <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Edgar Mine Virtual STIX/tip/files/meshes/Edgar_Section_05.DAE</uri>
               <scale>2 2 2</scale>
             </mesh>
           </geometry>
@@ -168,7 +168,7 @@
         <collision name="section_06_collision">
           <geometry>
             <mesh>
-              <uri>meshes/Edgar_Section_06.DAE</uri>
+              <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Edgar Mine Virtual STIX/tip/files/meshes/Edgar_Section_06.DAE</uri>
               <scale>2 2 2</scale>
             </mesh>
           </geometry>
@@ -176,7 +176,7 @@
         <visual name="section_06_visual">
           <geometry>
             <mesh>
-              <uri>meshes/Edgar_Section_06.DAE</uri>
+              <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Edgar Mine Virtual STIX/tip/files/meshes/Edgar_Section_06.DAE</uri>
               <scale>2 2 2</scale>
             </mesh>
           </geometry>
@@ -190,7 +190,7 @@
         <collision name="section_07_collision">
           <geometry>
             <mesh>
-              <uri>meshes/Edgar_Section_07.DAE</uri>
+              <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Edgar Mine Virtual STIX/tip/files/meshes/Edgar_Section_07.DAE</uri>
               <scale>2 2 2</scale>
             </mesh>
           </geometry>
@@ -198,7 +198,7 @@
         <visual name="section_07_visual">
           <geometry>
             <mesh>
-              <uri>meshes/Edgar_Section_07.DAE</uri>
+              <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Edgar Mine Virtual STIX/tip/files/meshes/Edgar_Section_07.DAE</uri>
               <scale>2 2 2</scale>
             </mesh>
           </geometry>
@@ -212,7 +212,7 @@
         <collision name="section_08_collision">
           <geometry>
             <mesh>
-              <uri>meshes/Edgar_Section_08.DAE</uri>
+              <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Edgar Mine Virtual STIX/tip/files/meshes/Edgar_Section_08.DAE</uri>
               <scale>2 2 2</scale>
             </mesh>
           </geometry>
@@ -220,7 +220,7 @@
         <visual name="section_08_visual">
           <geometry>
             <mesh>
-              <uri>meshes/Edgar_Section_08.DAE</uri>
+              <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Edgar Mine Virtual STIX/tip/files/meshes/Edgar_Section_08.DAE</uri>
               <scale>2 2 2</scale>
             </mesh>
           </geometry>
@@ -234,7 +234,7 @@
         <collision name="section_09_collision">
           <geometry>
             <mesh>
-              <uri>meshes/Edgar_Section_09.DAE</uri>
+              <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Edgar Mine Virtual STIX/tip/files/meshes/Edgar_Section_09.DAE</uri>
               <scale>2 2 2</scale>
             </mesh>
           </geometry>
@@ -242,7 +242,7 @@
         <visual name="section_09_visual">
           <geometry>
             <mesh>
-              <uri>meshes/Edgar_Section_09.DAE</uri>
+              <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Edgar Mine Virtual STIX/tip/files/meshes/Edgar_Section_09.DAE</uri>
               <scale>2 2 2</scale>
             </mesh>
           </geometry>
@@ -256,7 +256,7 @@
         <collision name="section_10_collision">
           <geometry>
             <mesh>
-              <uri>meshes/Edgar_Section_10.DAE</uri>
+              <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Edgar Mine Virtual STIX/tip/files/meshes/Edgar_Section_10.DAE</uri>
               <scale>2 2 2</scale>
             </mesh>
           </geometry>
@@ -264,7 +264,7 @@
         <visual name="section_10_visual">
           <geometry>
             <mesh>
-              <uri>meshes/Edgar_Section_10.DAE</uri>
+              <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Edgar Mine Virtual STIX/tip/files/meshes/Edgar_Section_10.DAE</uri>
               <scale>2 2 2</scale>
             </mesh>
           </geometry>
