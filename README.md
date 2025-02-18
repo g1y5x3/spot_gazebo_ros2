@@ -40,8 +40,6 @@ A ROS 2 Humble simulation package for the Boston Dynamics Spot robot using Ignit
             <img src="assets/edgar_mine_1.png" height="200" width="200">
         </div>
 
-
-
 ## Install
 
 ### Requirements
