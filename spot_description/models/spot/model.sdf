@@ -163,6 +163,7 @@
       <sensor name='gpu_lidar' type='gpu_lidar'>
         <topic>model/spot/lidar</topic>
         <update_rate>10</update_rate>
+        <gz_frame_id>lidar_link</gz_frame_id>
         <lidar>
           <scan>
             <horizontal>

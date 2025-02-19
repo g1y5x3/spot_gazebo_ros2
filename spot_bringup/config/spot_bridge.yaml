@@ -9,13 +9,23 @@
   ros_type_name: "sensor_msgs/msg/JointState"
   gz_type_name: "ignition.msgs.Model"
   direction: GZ_TO_ROS
-- ros_topic_name: "/spot/joint_trajectory"
-  gz_topic_name: "/model/spot/joint_trajectory"
-  ros_type_name: "trajectory_msgs/msg/JointTrajectory"
-  gz_type_name: "ignition.msgs.JointTrajectory"
-  direction: ROS_TO_GZ
 - ros_topic_name: "/spot/odometry"
   gz_topic_name: "/model/spot/odometry"
   ros_type_name: "nav_msgs/msg/Odometry"
   gz_type_name: "ignition.msgs.Odometry"
   direction: GZ_TO_ROS
+- ros_topic_name: "/spot/thermal_camera"
+  gz_topic_name: "/model/spot/thermal_camera"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "ignition.msgs.Image"
+  direction: GZ_TO_ROS
+- ros_topic_name: "/spot/lidar/points"
+  gz_topic_name: "/model/spot/lidar/points"
+  ros_type_name: "sensor_msgs/msg/PointCloud2"
+  gz_type_name: "ignition.msgs.PointCloudPacked"
+  direction: GZ_TO_ROS
+- ros_topic_name: "/spot/joint_trajectory"
+  gz_topic_name: "/model/spot/joint_trajectory"
+  ros_type_name: "trajectory_msgs/msg/JointTrajectory"
+  gz_type_name: "ignition.msgs.JointTrajectory"
+  direction: ROS_TO_GZ
