@@ -40,6 +40,7 @@ def generate_launch_description():
                         'worlds',
                         world_file
                     ]),
+                    # ' --render-engine ogre2'  # doesn't seem to improve simulation speed
                     # ' -v 4'   # show debug messages for gazebo
                 ],
             }.items(),

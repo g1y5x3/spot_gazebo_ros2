@@ -162,18 +162,18 @@
       <pose>0.223 0 0.11635 0 0 0</pose>
       <sensor name='gpu_lidar' type='gpu_lidar'>
         <topic>model/spot/lidar</topic>
-        <update_rate>10</update_rate>
+        <update_rate>5</update_rate>
         <gz_frame_id>lidar_link</gz_frame_id>
         <lidar>
           <scan>
             <horizontal>
-              <samples>160</samples>
+              <samples>120</samples>
               <resolution>1</resolution>
               <min_angle>-1.396263</min_angle>
               <max_angle>1.396263</max_angle>
             </horizontal>
             <vertical>
-              <samples>16</samples>
+              <samples>12</samples>
               <resolution>1</resolution>
               <min_angle>-0.261799</min_angle>
               <max_angle>0.261799</max_angle>
@@ -182,11 +182,12 @@
           <range>
             <min>0.08</min>
             <max>10.0</max>
-            <resolution>0.02</resolution>
+            <resolution>0.03</resolution>
           </range>
         </lidar>
         <alwaysOn>1</alwaysOn>
-        <visualize>true</visualize>
+        <!-- Save computation -->
+        <visualize>false</visualize>
       </sensor>
     </link>
 
@@ -207,10 +208,10 @@
           </cylinder>
         </geometry>
         <camera>
-          <horizontal_fov>1.047</horizontal_fov>
+          <horizontal_fov>0.8727</horizontal_fov>
           <image>
-            <width>320</width>
-            <height>240</height>
+            <width>160</width>
+            <height>160</height>
             <format>L16</format>
           </image>
           <clip>
@@ -219,8 +220,8 @@
           </clip>
         </camera>
         <always_on>1</always_on>
-        <update_rate>30</update_rate>
-        <visualize>true</visualize>
+        <update_rate>10</update_rate>
+        <visualize>false</visualize>
         <topic>model/spot/thermal_camera</topic>
       </sensor>
     </link>
