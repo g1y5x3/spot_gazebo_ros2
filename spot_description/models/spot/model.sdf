@@ -1901,7 +1901,7 @@
     <plugin
       filename="ignition-gazebo-odometry-publisher-system"
       name="ignition::gazebo::systems::OdometryPublisher">
-      <odom_frame>odom_gz</odom_frame>
+      <odom_frame>odom</odom_frame>
       <robot_base_frame>base_link</robot_base_frame>
       <dimensions>3</dimensions>
     </plugin>
