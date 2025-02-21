@@ -14,10 +14,10 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-    world_file = LaunchConfiguration('world_file', default='simple_tunnel_02.sdf')
+    world_file = LaunchConfiguration('world_file', default='simple_tunnel.sdf')
     world_file_arg = DeclareLaunchArgument(
         'world_file',
-        default_value='simple_tunnel_02.sdf',
+        default_value='simple_tunnel.sdf',
         description='Name of the world file to load'
     )
 

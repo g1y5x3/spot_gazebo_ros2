@@ -186,8 +186,7 @@
           </range>
         </lidar>
         <alwaysOn>1</alwaysOn>
-        <!-- Save computation -->
-        <visualize>false</visualize>
+        <visualize>true</visualize>
       </sensor>
     </link>
 
@@ -221,7 +220,7 @@
         </camera>
         <always_on>1</always_on>
         <update_rate>10</update_rate>
-        <visualize>false</visualize>
+        <visualize>true</visualize>
         <topic>model/spot/thermal_camera</topic>
       </sensor>
     </link>

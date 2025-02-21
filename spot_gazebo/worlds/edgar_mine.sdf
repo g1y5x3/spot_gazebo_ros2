@@ -23,11 +23,20 @@
         name="ignition::gazebo::systems::UserCommands">
     </plugin>
 
-    <physics name="default_physics" type="ode">
+    <physics name="1ms" type="ode">
       <max_step_size>0.001</max_step_size>
-      <real_time_factor>1.0</real_time_factor>
-      <real_time_update_rate>1000</real_time_update_rate>
+      <real_time_factor>0</real_time_factor>
     </physics>
+
+    <scene>
+      <!-- modified (shadows) to reduce computation effort, default : true -->
+      <shadows>false</shadows>
+    </scene>
+
+    <atmosphere type="adiabatic">
+       <temperature>288</temperature>
+       <temperature_gradient>0.2</temperature_gradient>
+    </atmosphere>
 
     <model name="Edgar_Mine_Virtual_STIX">
       <pose>-0.40 118 0 1.5707 0 -0.35</pose>
