@@ -26,7 +26,7 @@
   ros_type_name: "sensor_msgs/msg/Image"
   gz_type_name: "ignition.msgs.Image"
   direction: GZ_TO_ROS
-- ros_topic_name: "/spot/lidar"
+- ros_topic_name: "/scan"
   gz_topic_name: "/model/spot/lidar"
   ros_type_name: "sensor_msgs/msg/LaserScan"
   gz_type_name: "ignition.msgs.LaserScan"

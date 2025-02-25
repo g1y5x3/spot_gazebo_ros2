@@ -148,8 +148,6 @@
       </plugin>
 
       <plugin filename="VisualizeLidar" name="Visualize Lidar">
-        <topic>model/spot/lidar</topic>
-        <topic_picker>false</topic_picker>
       </plugin>
     </gui>
 
